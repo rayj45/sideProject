@@ -16,61 +16,52 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/notices")
 public class PostController {
 
     private final PostService postService;
 
-    @GetMapping("/")
-    public String redirectToLogin() {
-        return "redirect:/login";
-    }
-
-    @GetMapping("/login")
-    public String login() {
-        return "login";
-    }
-
-    @GetMapping("/posts/list")
+    @GetMapping("/list")
     public String list(Model model, @PageableDefault(size = 10) Pageable pageable) {
         Page<PostResponse> posts = postService.list(pageable);
         model.addAttribute("posts", posts);
-        return "list";
+        return "notices/list";
     }
 
-    @GetMapping("/posts/write")
+    @GetMapping("/write")
     public String write() {
-        return "write";
+        return "notices/write";
     }
 
-    @PostMapping("/posts/write")
+    @PostMapping("/write")
     public String write(@ModelAttribute PostCreate request) {
         postService.write(request);
-        return "redirect:/posts/list";
+        return "redirect:/notices/list";
     }
 
-    @GetMapping("/posts/read/{postId}")
+    @GetMapping("/read/{postId}")
     public String read(@PathVariable Long postId, Model model) {
         PostResponse post = postService.read(postId);
         model.addAttribute("post", post);
-        return "read";
+        return "notices/read";
     }
 
-    @GetMapping("/posts/modify/{postId}")
+    @GetMapping("/modify/{postId}")
     public String modify(@PathVariable Long postId, Model model) {
         PostResponse post = postService.read(postId);
         model.addAttribute("post", post);
-        return "modify";
+        return "notices/modify";
     }
 
-    @PostMapping("/posts/modify/{postId}")
+    @PostMapping("/modify/{postId}")
     public String modify(@PathVariable Long postId, @ModelAttribute PostEdit postEdit) {
         postService.modify(postId, postEdit);
-        return "redirect:/posts/read/" + postId;
+        return "redirect:/notices/read/" + postId;
     }
 
-    @PostMapping("/posts/delete/{postId}")
+    @PostMapping("/delete/{postId}")
     public String delete(@PathVariable Long postId) {
         postService.delete(postId);
-        return "redirect:/posts/list";
+        return "redirect:/notices/list";
     }
 }

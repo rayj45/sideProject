@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lifeDeveloperLSH</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+</head>
+<body>
+
+<header class="navbar" id="navbar">
+    <a href="/" class="navbar-brand">lifeDeveloperLSH</a>
+    <nav>
+        <ul class="navbar-nav" id="navbar-nav">
+            <li class="nav-item"><a href="/about" class="nav-link">사이트소개</a></li>
+            <li class="nav-item"><a href="/notices/list" class="nav-link">공지사항</a></li>
+            <li class="nav-item"><a href="/archive" class="nav-link">자료실</a></li>
+            <li class="nav-item"><a href="/faq" class="nav-link">자주묻는질문</a></li>
+        </ul>
+    </nav>
+    <div>
+        <div sec:authorize="isAnonymous()">
+            <a href="/login" class="btn btn-primary" style="color: #fff; border-color: #fff;">로그인</a>
+        </div>
+        <div sec:authorize="isAuthenticated()">
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-secondary">로그아웃</button>
+            </form>
+        </div>
+    </div>
+    <button class="navbar-toggler" id="navbar-toggler" aria-label="Toggle navigation">
+        &#9776;
+    </button>
+</header>
+
+<main>
+    <!-- Section 1: Freedom with Technology -->
+    <section id="section1" class="full-section">
+        <div class="section-content">
+            <h1>lifeDeveloperLSH,<br>인생을 개발하다</h1>
+            <p>현대 기술의 발전으로 우리는 더 자유로운 삶을 꿈꿀 수 있습니다.<br>코드를 통해 현실의 문제를 해결하고, 새로운 가능성을 창조합니다.</p>
+        </div>
+    </section>
+
+    <!-- Section 2: History of Development -->
+    <section id="section2" class="full-section">
+        <div class="section-content">
+            <h1>기술의 도약, 웹의 역사</h1>
+            <p>정적인 페이지에서 동적인 웹 애플리케이션으로, 그리고 이제는 지능형 서비스로.<br>웹 기술의 발전은 세상을 연결하고 소통하는 방식을 바꾸었습니다.</p>
+        </div>
+    </section>
+
+    <!-- Section 3: Future with AI -->
+    <section id="section3" class="full-section">
+        <div class="section-content">
+            <h1>AI와 함께 열어가는 미래</h1>
+            <p>인공지능은 단순한 도구를 넘어, 우리의 창의적인 파트너가 될 것입니다.<br>AI 기술을 활용하여 더욱 편리하고 풍요로운 미래를 만들어갑니다.</p>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <p>&copy; 2025 lifeDeveloperLSH. All Rights Reserved.</p>
+</footer>
+
+<script>
+    // Navbar Toggler for mobile
+    document.getElementById('navbar-toggler').addEventListener('click', function() {
+        document.getElementById('navbar-nav').classList.toggle('active');
+    });
+
+    // Navbar background color change on scroll
+    window.addEventListener('scroll', function() {
+        const navbar = document.getElementById('navbar');
+        if (window.scrollY > 50) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // Scroll animation for sections
+    const sections = document.querySelectorAll('.full-section');
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.3 // Trigger when 30% of the section is visible
+    });
+
+    sections.forEach(section => {
+        observer.observe(section);
+    });
+</script>
+
+</body>
+</html>

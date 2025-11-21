@@ -23,7 +23,7 @@ public class SecurityConfig {
                 )
                 .formLogin(form -> form
                         .loginPage("/login") // 커스텀 로그인 페이지 경로
-                        .defaultSuccessUrl("/posts/list", true) // 로그인 성공 시 이동할 페이지
+                        .defaultSuccessUrl("/", true) // 로그인 성공 시 이동할 페이지
                         .permitAll()
                 )
                 .logout(logout -> logout

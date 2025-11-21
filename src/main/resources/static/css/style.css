@@ -1,0 +1,176 @@
+/* General Body Styles */
+body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+    color: #fff;
+    margin: 0;
+    background-color: #000;
+}
+
+/* Header and Navigation */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: transparent;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    box-sizing: border-box;
+    transition: background-color 0.3s ease;
+}
+
+.navbar.scrolled {
+    background-color: rgba(0, 0, 0, 0.8);
+    border-bottom: 1px solid #333;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #fff;
+    text-decoration: none;
+}
+
+.navbar-nav {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-item {
+    margin-left: 1.5rem;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: #eee;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+.nav-link:hover {
+    color: #00aaff;
+}
+
+.navbar-toggler {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #fff;
+}
+
+/* Full-screen Sections */
+.full-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 0 2rem;
+    box-sizing: border-box;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Parallax Effect */
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.full-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Dark Overlay */
+    z-index: 1;
+}
+
+.full-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.section-content {
+    max-width: 800px;
+    z-index: 2; /* Content on top of the overlay */
+}
+
+.section-content h1 {
+    font-size: 3.5rem;
+    font-weight: 900;
+    margin: 0;
+    line-height: 1.3;
+}
+
+.section-content p {
+    font-size: 1.2rem;
+    color: #ddd;
+    margin-top: 1rem;
+    line-height: 1.6;
+}
+
+/* Background Images */
+#section1 { background-image: url('/static/images/nature.jpg'); }
+#section2 { background-image: url('/static/images/AI.jpg'); }
+#section3 { background-image: url('/static/images/future.jpg'); }
+
+/* Footer */
+.footer {
+    text-align: center;
+    padding: 2rem;
+    background-color: #0a0a0a;
+    border-top: 1px solid #333;
+    font-size: 0.9rem;
+    color: #6c757d;
+    position: relative; /* Ensure footer is properly layered */
+    z-index: 5;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .navbar-nav {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        position: absolute;
+        top: 60px;
+        left: 0;
+        border-top: 1px solid #333;
+    }
+
+    .navbar-nav.active {
+        display: flex;
+    }
+
+    .nav-item {
+        margin: 1rem 0;
+        text-align: center;
+    }
+
+    .navbar-toggler {
+        display: block;
+    }
+
+    .full-section {
+        background-attachment: scroll; /* Disable parallax on mobile for performance */
+    }
+
+    .section-content h1 {
+        font-size: 2.5rem;
+    }
+
+    .section-content p {
+        font-size: 1rem;
+    }
+}
