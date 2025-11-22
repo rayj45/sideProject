@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>자료실</title>
+    <title>공지사항</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
@@ -14,42 +14,40 @@
 
 <main style="padding: 100px 2rem 2rem; color: #333; background-color: #fff; min-height: calc(100vh - 70px);">
     <div class="container">
-        <h1 class="mb-4">자료실</h1>
+        <h1 class="mb-4">공지사항</h1>
         <table class="table table-hover mt-3">
             <thead>
             <tr>
                 <th>ID</th>
                 <th>제목</th>
-                <th>첨부파일</th>
                 <th>등록일시</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="archive : ${archives.content}" th:onclick="|location.href='@{/archive/read/{archiveId}(archiveId=${archive.id})}'|" style="cursor:pointer;">
-                <td th:text="${archive.id}"></td>
-                <td th:text="${archive.title}"></td>
-                <td th:text="${archive.originalFileName}"></td>
-                <td th:text="${archive.createdDate}"></td>
+            <tr th:each="post : ${posts.content}" th:onclick="|location.href='@{/notice/read/{postId}(postId=${post.id})}'|" style="cursor:pointer;">
+                <td th:text="${post.id}"></td>
+                <td th:text="${post.title}"></td>
+                <td th:text="${post.createdDate}"></td>
             </tr>
             </tbody>
         </table>
 
-        <nav aria-label="Page navigation" th:if="${archives.totalPages > 0}">
+        <nav aria-label="Page navigation" th:if="${posts.totalPages > 0}">
             <ul class="pagination justify-content-center">
-                <li class="page-item" th:classappend="${archives.first} ? 'disabled'">
-                    <a class="page-link" th:href="@{/archive/list(page=${archives.number - 1})}">이전</a>
+                <li class="page-item" th:classappend="${posts.first} ? 'disabled'">
+                    <a class="page-link" th:href="@{/notice/list(page=${posts.number - 1})}">이전</a>
                 </li>
-                <li class="page-item" th:each="page : ${#numbers.sequence(T(java.lang.Math).max(0, archives.number - 2), T(java.lang.Math).min(archives.totalPages - 1, archives.number + 2))}" th:classappend="${page == archives.number} ? 'active'">
-                    <a class="page-link" th:href="@{/archive/list(page=${page})}" th:text="${page + 1}"></a>
+                <li class="page-item" th:each="page : ${#numbers.sequence(T(java.lang.Math).max(0, posts.number - 2), T(java.lang.Math).min(posts.totalPages - 1, posts.number + 2))}" th:classappend="${page == posts.number} ? 'active'">
+                    <a class="page-link" th:href="@{/notice/list(page=${page})}" th:text="${page + 1}"></a>
                 </li>
-                <li class="page-item" th:classappend="${archives.last} ? 'disabled'">
-                    <a class="page-link" th:href="@{/archive/list(page=${archives.number + 1})}">다음</a>
+                <li class="page-item" th:classappend="${posts.last} ? 'disabled'">
+                    <a class="page-link" th:href="@{/notice/list(page=${posts.number + 1})}">다음</a>
                 </li>
             </ul>
         </nav>
 
         <div sec:authorize="hasRole('ADMIN')">
-            <a href="/archive/write" class="btn btn-primary">자료 등록</a>
+            <a href="/notice/write" class="btn btn-primary">글쓰기</a>
         </div>
     </div>
 </main>

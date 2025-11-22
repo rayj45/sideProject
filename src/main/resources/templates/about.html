@@ -9,39 +9,14 @@
 </head>
 <body>
 
-<header class="navbar">
-    <a href="/" class="navbar-brand">lifeDeveloperLSH</a>
-    <nav>
-        <ul class="navbar-nav" id="navbar-nav">
-            <li class="nav-item"><a href="/about" class="nav-link">사이트소개</a></li>
-            <li class="nav-item"><a href="/notices/list" class="nav-link">공지사항</a></li>
-            <li class="nav-item"><a href="/archive" class="nav-link">자료실</a></li>
-            <li class="nav-item"><a href="/faq" class="nav-link">자주묻는질문</a></li>
-        </ul>
-    </nav>
-    <div>
-        <div sec:authorize="isAnonymous()">
-            <a href="/login" class="btn btn-primary">로그인</a>
-        </div>
-        <div sec:authorize="isAuthenticated()">
-            <form th:action="@{/logout}" method="post" style="display: inline;">
-                <button type="submit" class="btn btn-secondary">로그아웃</button>
-            </form>
-        </div>
-    </div>
-    <button class="navbar-toggler" id="navbar-toggler" aria-label="Toggle navigation">
-        &#9776;
-    </button>
-</header>
+<div th:replace="~{fragments/header :: header}"></div>
 
-<main style="padding-top: 80px; text-align: center;">
+<main style="padding-top: 80px; text-align: center; color: #333; background-color: #fff; min-height: calc(100vh - 140px);">
     <h1>사이트소개</h1>
     <p>이곳은 lifeDeveloperLSH의 사이드 프로젝트입니다.</p>
 </main>
 
-<footer class="footer">
-    <p>&copy; 2024 lifeDeveloperLSH. All Rights Reserved.</p>
-</footer>
+<div th:replace="~{fragments/footer :: footer}"></div>
 
 <script>
     document.getElementById('navbar-toggler').addEventListener('click', function() {

@@ -33,4 +33,11 @@ public class Archive extends BaseTimeEntity {
         this.originalFileName = originalFileName;
         this.storedFilePath = storedFilePath;
     }
+
+    public void modify(String title, String content, String originalFileName, String storedFilePath) {
+        this.title = title;
+        this.content = content;
+        this.originalFileName = originalFileName;
+        this.storedFilePath = storedFilePath;
+    }
 }

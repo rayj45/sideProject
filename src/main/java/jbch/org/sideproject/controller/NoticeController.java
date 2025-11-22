@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/notices")
-public class PostController {
+@RequestMapping("/notice")
+public class NoticeController {
 
     private final PostService postService;
 
@@ -25,43 +25,43 @@ public class PostController {
     public String list(Model model, @PageableDefault(size = 10) Pageable pageable) {
         Page<PostResponse> posts = postService.list(pageable);
         model.addAttribute("posts", posts);
-        return "notices/list";
+        return "notice/list";
     }
 
     @GetMapping("/write")
     public String write() {
-        return "notices/write";
+        return "notice/write";
     }
 
     @PostMapping("/write")
     public String write(@ModelAttribute PostCreate request) {
         postService.write(request);
-        return "redirect:/notices/list";
+        return "redirect:/notice/list";
     }
 
     @GetMapping("/read/{postId}")
     public String read(@PathVariable Long postId, Model model) {
         PostResponse post = postService.read(postId);
         model.addAttribute("post", post);
-        return "notices/read";
+        return "notice/read";
     }
 
     @GetMapping("/modify/{postId}")
     public String modify(@PathVariable Long postId, Model model) {
         PostResponse post = postService.read(postId);
         model.addAttribute("post", post);
-        return "notices/modify";
+        return "notice/modify";
     }
 
     @PostMapping("/modify/{postId}")
     public String modify(@PathVariable Long postId, @ModelAttribute PostEdit postEdit) {
         postService.modify(postId, postEdit);
-        return "redirect:/notices/read/" + postId;
+        return "redirect:/notice/read/" + postId;
     }
 
     @PostMapping("/delete/{postId}")
     public String delete(@PathVariable Long postId) {
         postService.delete(postId);
-        return "redirect:/notices/list";
+        return "redirect:/notice/list";
     }
 }
