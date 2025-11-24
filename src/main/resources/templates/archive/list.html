@@ -10,9 +10,9 @@
 </head>
 <body>
 
-<div th:replace="~{fragments/header :: header}"></div>
+<div th:replace="~{fragments/header-sub :: header-sub}"></div>
 
-<main style="padding: 100px 2rem 2rem; color: #333; background-color: #fff; min-height: calc(100vh - 70px);">
+<main style="padding: 4rem 2rem; color: #333; background-color: #fff; min-height: calc(100vh - 140px);">
     <div class="container">
         <h1 class="mb-4">자료실</h1>
         <table class="table table-hover mt-3">
@@ -57,11 +57,5 @@
 <div th:replace="~{fragments/footer :: footer}"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    // This script is for the header fragment
-    document.getElementById('navbar-toggler').addEventListener('click', function() {
-        document.getElementById('navbar-nav').classList.toggle('active');
-    });
-</script>
 </body>
 </html>
