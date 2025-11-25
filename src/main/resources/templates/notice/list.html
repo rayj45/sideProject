@@ -18,14 +18,14 @@
         <table class="table table-hover mt-3">
             <thead>
             <tr>
-                <th>ID</th>
+                <th>NO</th>
                 <th>제목</th>
                 <th>등록일시</th>
             </tr>
             </thead>
             <tbody>
-            <tr th:each="post : ${posts.content}" th:onclick="|location.href='@{/notice/read/{postId}(postId=${post.id})}'|" style="cursor:pointer;">
-                <td th:text="${post.id}"></td>
+            <tr th:each="post, iterStat : ${posts.content}" th:onclick="|location.href='@{/notice/read/{postId}(postId=${post.id})}'|" style="cursor:pointer;">
+                <td th:text="${posts.totalElements - (posts.number * posts.size) - iterStat.index}"></td>
                 <td th:text="${post.title}"></td>
                 <td th:text="${post.createdDate}"></td>
             </tr>

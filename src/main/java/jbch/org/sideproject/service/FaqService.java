@@ -20,7 +20,7 @@ public class FaqService {
     private final FaqRepository faqRepository;
 
     public List<FaqResponse> list() {
-        return faqRepository.findAll().stream()
+        return faqRepository.findAllByOrderByCreatedDateDesc().stream()
                 .map(FaqResponse::new)
                 .collect(Collectors.toList());
     }

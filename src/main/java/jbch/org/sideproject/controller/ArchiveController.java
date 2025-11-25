@@ -10,6 +10,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class ArchiveController {
     private final ArchiveService archiveService;
 
     @GetMapping("/list")
-    public String list(Model model, @PageableDefault(size = 10) Pageable pageable) {
+    public String list(Model model, @PageableDefault(size = 10, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<ArchiveResponse> archives = archiveService.list(pageable);
         model.addAttribute("archives", archives);
         return "archive/list";

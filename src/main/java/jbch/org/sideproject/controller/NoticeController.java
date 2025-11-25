@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,7 +23,7 @@ public class NoticeController {
     private final PostService postService;
 
     @GetMapping("/list")
-    public String list(Model model, @PageableDefault(size = 10) Pageable pageable) {
+    public String list(Model model, @PageableDefault(size = 10, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<PostResponse> posts = postService.list(pageable);
         model.addAttribute("posts", posts);
         return "notice/list";

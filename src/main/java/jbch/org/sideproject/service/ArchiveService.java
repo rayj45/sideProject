@@ -17,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
@@ -33,7 +32,32 @@ public class ArchiveService {
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public void write(ArchiveCreate archiveCreate) throws IOException {
-        // ... (기존 write 로직과 동일)
+        MultipartFile file = archiveCreate.getFile();
+        String originalFileName = null;
+        String storedFilePath = null;
+
+        if (file != null && !file.isEmpty()) {
+            originalFileName = file.getOriginalFilename();
+            String uuid = UUID.randomUUID().toString();
+            String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+            String fileName = uuid + extension;
+            storedFilePath = uploadDir + File.separator + fileName;
+
+            File dest = new File(storedFilePath);
+            if (!dest.getParentFile().exists()) {
+                dest.getParentFile().mkdirs();
+            }
+            file.transferTo(dest);
+        }
+
+        Archive archive = Archive.builder()
+                .title(archiveCreate.getTitle())
+                .content(archiveCreate.getContent())
+                .originalFileName(originalFileName)
+                .storedFilePath(storedFilePath)
+                .build();
+
+        archiveRepository.save(archive);
     }
 
     public Page<ArchiveResponse> list(Pageable pageable) {
@@ -52,17 +76,14 @@ public class ArchiveService {
         Archive archive = archiveRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 자료입니다."));
 
-        // 파일 수정 로직 (새 파일이 있으면 기존 파일 삭제 후 업로드)
         MultipartFile newFile = archiveEdit.getFile();
         String originalFileName = archive.getOriginalFileName();
         String storedFilePath = archive.getStoredFilePath();
 
         if (newFile != null && !newFile.isEmpty()) {
-            // 기존 파일 삭제
             if (storedFilePath != null) {
                 Files.deleteIfExists(Paths.get(storedFilePath));
             }
-            // 새 파일 업로드
             originalFileName = newFile.getOriginalFilename();
             String uuid = UUID.randomUUID().toString();
             String extension = originalFileName.substring(originalFileName.lastIndexOf("."));
@@ -80,7 +101,6 @@ public class ArchiveService {
         Archive archive = archiveRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 자료입니다."));
 
-        // 첨부파일이 있으면 물리적 파일 삭제
         if (archive.getStoredFilePath() != null) {
             Files.deleteIfExists(Paths.get(archive.getStoredFilePath()));
         }
