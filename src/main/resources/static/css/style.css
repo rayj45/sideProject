@@ -142,9 +142,9 @@ body {
 }
 
 /* Background Images */
-#section1 { background-image: url('/images/nature.jpg'); }
-#section2 { background-image: url('/images/AI.jpg'); }
-#section3 { background-image: url('/images/future.jpg'); }
+#section1 { background-image: url('../images/nature.jpg'); }
+#section2 { background-image: url('../images/AI.jpg'); }
+#section3 { background-image: url('../images/future.jpg'); }
 
 /* Footer */
 .footer {
