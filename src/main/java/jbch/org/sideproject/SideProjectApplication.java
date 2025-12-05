@@ -2,6 +2,8 @@ package jbch.org.sideproject;
 
 import jbch.org.sideproject.domain.Faq;
 import jbch.org.sideproject.domain.User;
+import jbch.org.sideproject.domain.UserRole;
+import jbch.org.sideproject.domain.UserStatus;
 import jbch.org.sideproject.repository.FaqRepository;
 import jbch.org.sideproject.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -27,7 +29,9 @@ public class SideProjectApplication {
                 User adminUser = User.builder()
                         .username("admin")
                         .password(passwordEncoder.encode("admin"))
-                        .role("ROLE_ADMIN")
+                        .role(UserRole.ROLE_ADMIN)
+                        .status(UserStatus.ACTIVE)
+                        .email("admin@example.com")
                         .build();
                 userRepository.save(adminUser);
             }
