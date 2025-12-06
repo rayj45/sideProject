@@ -1,76 +1,54 @@
-/* General Body Styles */
+/* ==========================================================================
+   Global Styles
+   ========================================================================== */
 body {
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
-    color: #fff;
     margin: 0;
-    background-color: #000;
 }
 
-/* Header and Navigation (Main Page) */
+/* ==========================================================================
+   Header & Navigation
+   ========================================================================== */
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 1rem 2rem;
-    background-color: transparent;
-    position: fixed;
     width: 100%;
-    top: 0;
     z-index: 1000;
     box-sizing: border-box;
-    transition: background-color 0.3s ease;
 }
 
-.navbar.scrolled {
+/* Main Page Header Wrapper */
+.navbar-main-wrapper {
+    background-color: transparent;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    transition: background-color 0.3s ease;
+}
+.navbar-main-wrapper.scrolled {
     background-color: rgba(0, 0, 0, 0.8);
     border-bottom: 1px solid #333;
 }
-
-.navbar-brand {
-    font-size: 1.5rem;
-    font-weight: 800;
+.navbar-main-wrapper .navbar-brand,
+.navbar-main-wrapper .nav-link,
+.navbar-main-wrapper .navbar-toggler {
     color: #fff;
-    text-decoration: none;
 }
-
-.navbar-nav {
-    display: none; /* Hidden by default on mobile */
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-
-.nav-item {
-    margin-left: 1.5rem;
-}
-
-.nav-link {
-    text-decoration: none;
-    color: #eee;
-    font-weight: 600;
-    transition: color 0.3s;
-}
-
-.nav-link:hover {
+.navbar-main-wrapper .nav-link:hover {
     color: #00aaff;
 }
 
-.navbar-toggler {
-    display: none;
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #fff;
-}
-
-/* Sub-page Header */
+/* Sub Page Header */
 .navbar-sub {
     background-color: #fff;
     border-bottom: 1px solid #f2f2f2;
-    position: static; /* Not fixed */
+    position: static;
 }
-.navbar-sub .navbar-brand {
+.navbar-sub .navbar-brand,
+.navbar-sub .navbar-toggler {
     color: #000;
 }
 .navbar-sub .nav-link {
@@ -79,14 +57,48 @@ body {
 .navbar-sub .nav-link:hover {
     color: #007bff;
 }
-.navbar-nav-sub { /* New class for sub-page nav */
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-decoration: none;
+}
+.navbar-nav, .navbar-nav-sub {
     display: flex;
     list-style: none;
     margin: 0;
     padding: 0;
 }
+.nav-item {
+    margin-left: 1.5rem;
+}
+.nav-link {
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+.navbar-toggler {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
 
-/* Full-screen Sections */
+/* ==========================================================================
+   Main Content & Sections
+   ========================================================================== */
+.main-content {
+    padding: 4rem 2rem;
+    color: #333;
+    background-color: #fff;
+    min-height: calc(100vh - 140px);
+}
+
+.card-content-area {
+    min-height: 200px;
+}
+
 .full-section {
     display: flex;
     flex-direction: column;
@@ -101,11 +113,11 @@ body {
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
+    color: #fff;
     opacity: 0;
     transform: translateY(20px);
     transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
-
 .full-section::before {
     content: '';
     position: absolute;
@@ -116,24 +128,20 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
     z-index: 1;
 }
-
 .full-section.visible {
     opacity: 1;
     transform: translateY(0);
 }
-
 .section-content {
     max-width: 800px;
     z-index: 2;
 }
-
 .section-content h1 {
     font-size: 3.5rem;
     font-weight: 900;
     margin: 0;
     line-height: 1.3;
 }
-
 .section-content p {
     font-size: 1.2rem;
     color: #ddd;
@@ -142,11 +150,33 @@ body {
 }
 
 /* Background Images */
-#section1 { background-image: url('../images/nature.jpg'); }
-#section2 { background-image: url('../images/AI.jpg'); }
-#section3 { background-image: url('../images/future.jpg'); }
+#section1 { background-image: url('/images/nature.jpg'); }
+#section2 { background-image: url('/images/AI.jpg'); }
+#section3 { background-image: url('/images/future.jpg'); }
 
-/* Footer */
+/* ==========================================================================
+   Login & Signup Page
+   ========================================================================== */
+.form-page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+.form-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 15px;
+    margin: auto;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
 .footer {
     text-align: center;
     padding: 2rem;
@@ -158,10 +188,12 @@ body {
     z-index: 5;
 }
 
-/* Responsive Design */
+/* ==========================================================================
+   Responsive Design
+   ========================================================================== */
 @media (min-width: 769px) {
     .navbar-nav {
-        display: flex; /* Show on desktop */
+        display: flex;
     }
 }
 
@@ -180,7 +212,7 @@ body {
         display: flex;
     }
     .navbar-nav-sub {
-        display: none; /* Hide sub-nav on mobile for now */
+        display: none;
     }
     .nav-item {
         margin: 1rem 0;

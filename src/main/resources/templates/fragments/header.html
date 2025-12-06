@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
-    <header class="navbar" id="navbar" th:fragment="header">
+    <header class="navbar" th:fragment="header(id)">
         <a href="/" class="navbar-brand">lifeDeveloperLSH</a>
         <nav>
             <ul class="navbar-nav" id="navbar-nav">
@@ -13,11 +13,11 @@
         </nav>
         <div>
             <div sec:authorize="isAnonymous()">
-                <a href="/login" class="btn btn-primary" style="color: #fff; border-color: #fff;">로그인</a>
+                <a href="/login" class="btn btn-outline-light">로그인</a>
             </div>
             <div sec:authorize="isAuthenticated()">
                 <form th:action="@{/logout}" method="post" style="display: inline;">
-                    <button type="submit" class="btn btn-secondary">로그아웃</button>
+                    <button type="submit" class="btn btn-outline-light">로그아웃</button>
                 </form>
             </div>
         </div>

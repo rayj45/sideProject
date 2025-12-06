@@ -6,10 +6,11 @@
     <title>lifeDeveloperLSH</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
 
-<div th:replace="~{fragments/header :: header}"></div>
+<div class="navbar-main-wrapper" th:replace="~{fragments/header :: header(id='navbar')}"></div>
 
 <main>
     <!-- Section 1: Freedom with Technology -->
@@ -40,36 +41,36 @@
 <div th:replace="~{fragments/footer :: footer}"></div>
 
 <script>
+$(document).ready(function() {
     // Navbar Toggler for mobile
-    document.getElementById('navbar-toggler').addEventListener('click', function() {
-        document.getElementById('navbar-nav').classList.toggle('active');
+    $('#navbar-toggler').on('click', function() {
+        $('#navbar-nav').toggleClass('active');
     });
 
     // Navbar background color change on scroll
-    window.addEventListener('scroll', function() {
-        const navbar = document.getElementById('navbar');
-        if (window.scrollY > 50) {
-            navbar.classList.add('scrolled');
+    $(window).on('scroll', function() {
+        if ($(window).scrollTop() > 50) {
+            $('.navbar-main-wrapper').addClass('scrolled');
         } else {
-            navbar.classList.remove('scrolled');
+            $('.navbar-main-wrapper').removeClass('scrolled');
         }
     });
 
     // Scroll animation for sections
-    const sections = document.querySelectorAll('.full-section');
     const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
+                $(entry.target).addClass('visible');
             }
         });
     }, {
-        threshold: 0.3 // Trigger when 30% of the section is visible
+        threshold: 0.3
     });
 
-    sections.forEach(section => {
-        observer.observe(section);
+    $('.full-section').each(function() {
+        observer.observe(this);
     });
+});
 </script>
 
 </body>
