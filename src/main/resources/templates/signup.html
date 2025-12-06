@@ -24,8 +24,12 @@
                         <input type="text" class="form-control" id="username" name="username" required>
                     </div>
                     <div class="mb-3">
+                        <label for="nickName" class="form-label">닉네임</label>
+                        <input type="text" class="form-control" id="nickName" name="nickName" required>
+                    </div>
+                    <div class="mb-3">
                         <label for="password" class="form-label">비밀번호</label>
-                        <input type="password" class="form-control" id="password" name="password" required pattern="^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,16}$">
+                        <input type="password" class="form-control" id="password" name="password" required pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$">
                         <div class="form-text">8~16자의 영문, 숫자, 특수문자(@$!%*?&)를 포함해야 합니다.</div>
                     </div>
                     <div class="mb-3">

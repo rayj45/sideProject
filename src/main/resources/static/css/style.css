@@ -34,12 +34,18 @@ body {
 }
 .navbar-main-wrapper .navbar-brand,
 .navbar-main-wrapper .nav-link,
-.navbar-main-wrapper .navbar-toggler {
+.navbar-main-wrapper .navbar-toggler,
+.navbar-main-wrapper .welcome-message {
     color: #fff;
 }
 .navbar-main-wrapper .nav-link:hover {
     color: #00aaff;
 }
+.navbar-main-wrapper .welcome-message {
+    font-weight: 600; /* nav-link와 동일한 굵기 */
+    text-decoration: none;
+}
+
 
 /* Sub Page Header */
 .navbar-sub {
@@ -56,6 +62,10 @@ body {
 }
 .navbar-sub .nav-link:hover {
     color: #007bff;
+}
+.navbar-sub .welcome-message {
+    color: #333;
+    font-weight: 600; /* nav-link와 동일한 굵기 */
 }
 
 .navbar-brand {
@@ -83,6 +93,9 @@ body {
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
+}
+.welcome-message {
+    margin-right: 1rem;
 }
 
 /* ==========================================================================
@@ -157,22 +170,7 @@ body {
 /* ==========================================================================
    Login & Signup Page
    ========================================================================== */
-.form-page-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #f8f9fa;
-}
-.form-container {
-    width: 100%;
-    max-width: 400px;
-    padding: 15px;
-    margin: auto;
-    background-color: #fff;
-    border: 1px solid #dee2e6;
-    border-radius: 5px;
-}
+/* Removed as it's now using .main-content */
 
 /* ==========================================================================
    Footer
@@ -229,5 +227,8 @@ body {
     }
     .section-content p {
         font-size: 1rem;
+    }
+    .welcome-message {
+        display: none; /* Hide welcome message on small screens */
     }
 }

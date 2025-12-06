@@ -5,11 +5,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UserSignupRequestDto {
-    private String username;
+public class UserEditRequestDto {
+    private String username; // username 필드 추가
     private String nickName;
-    private String password;
     private String email;
     private String phone;
     private String userGroup;
+    private String currentPassword;
+    private String newPassword;
 }

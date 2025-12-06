@@ -28,6 +28,7 @@ public class SideProjectApplication {
             if (userRepository.findByUsername("admin").isEmpty()) {
                 User adminUser = User.builder()
                         .username("admin")
+                        .nickName("테스트관리자")
                         .password(passwordEncoder.encode("admin"))
                         .role(UserRole.ROLE_ADMIN)
                         .status(UserStatus.ACTIVE)

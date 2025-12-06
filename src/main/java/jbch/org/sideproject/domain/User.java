@@ -19,6 +19,9 @@ public class User extends BaseTimeEntity {
     @Column(length = 50)
     private String username;
 
+    @Column(length = 50)
+    private String nickName;
+
     private String password;
 
     @Enumerated(EnumType.STRING)
@@ -39,8 +42,9 @@ public class User extends BaseTimeEntity {
     private Boolean sellerApproved;
 
     @Builder
-    public User(String username, String password, UserRole role, String email, String phone, String userGroup, UserStatus status, Boolean sellerApproved) {
+    public User(String username, String nickName, String password, UserRole role, String email, String phone, String userGroup, UserStatus status, Boolean sellerApproved) {
         this.username = username;
+        this.nickName = nickName;
         this.password = password;
         this.role = role;
         this.email = email;
@@ -48,5 +52,17 @@ public class User extends BaseTimeEntity {
         this.userGroup = userGroup;
         this.status = status;
         this.sellerApproved = sellerApproved;
+    }
+
+    public void modifyInfo(String nickName, String email, String phone, String userGroup) {
+        this.nickName = nickName;
+        this.email = email;
+        this.phone = phone;
+        this.userGroup = userGroup;
+    }
+
+    // 비밀번호 변경 메서드
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
     }
 }

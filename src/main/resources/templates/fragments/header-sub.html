@@ -11,13 +11,19 @@
                 <li class="nav-item"><a href="/faq/list" class="nav-link">자주묻는질문</a></li>
             </ul>
         </nav>
-        <div>
+        <div class="d-flex align-items-center">
+            <!-- 비로그인 상태 -->
             <div sec:authorize="isAnonymous()">
                 <a href="/login" class="btn btn-outline-primary">로그인</a>
             </div>
-            <div sec:authorize="isAuthenticated()">
+            <!-- 로그인 상태 -->
+            <div sec:authorize="isAuthenticated()" class="d-flex align-items-center">
+                <a href="/user/mypage" class="welcome-message text-decoration-none">
+                    <span sec:authentication="principal.nickName"></span>님 환영합니다.
+                    (<span sec:authentication="principal.authorities[0]"></span>)
+                </a>
                 <form th:action="@{/logout}" method="post" style="display: inline;">
-                    <button type="submit" class="btn btn-secondary">로그아웃</button>
+                    <button type="submit" class="btn btn-outline-primary">로그아웃</button>
                 </form>
             </div>
         </div>
