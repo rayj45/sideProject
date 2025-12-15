@@ -20,7 +20,12 @@
             <div sec:authorize="isAuthenticated()" class="d-flex align-items-center">
                 <a href="/user/mypage" class="welcome-message text-decoration-none">
                     <span sec:authentication="principal.nickName"></span>님 환영합니다.
-                    (<span sec:authentication="principal.authorities[0]"></span>)
+<!--                    (<span sec:authentication="principal.authorities[0]"></span>)-->
+                    <span th:switch="${#authentication.principal.authorities[0].authority}">
+                    <span th:case="'ROLE_ADMIN'">(관리자)</span>
+                    <span th:case="'ROLE_SELLER'">(판매자)</span>
+                    <span th:case="'ROLE_USER'">(사용자)</span>
+                </span>
                 </a>
                 <form th:action="@{/logout}" method="post" style="display: inline;">
                     <button type="submit" class="btn btn-outline-light">로그아웃</button>

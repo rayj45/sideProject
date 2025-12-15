@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,16 +19,12 @@
         <table class="table table-bordered">
             <tbody>
                 <tr>
-                    <th scope="row" style="width: 20%;">아이디</th>
-                    <td th:text="${user.username}"></td>
+                    <th scope="row" style="width: 20%;">이메일 (아이디)</th>
+                    <td th:text="${user.email}"></td>
                 </tr>
                 <tr>
                     <th scope="row">닉네임</th>
                     <td th:text="${user.nickName}"></td>
-                </tr>
-                <tr>
-                    <th scope="row">이메일</th>
-                    <td th:text="${user.email}"></td>
                 </tr>
                 <tr>
                     <th scope="row">휴대폰번호</th>

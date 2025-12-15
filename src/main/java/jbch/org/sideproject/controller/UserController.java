@@ -12,11 +12,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -34,6 +33,14 @@ public class UserController {
     public String signup(@ModelAttribute UserSignupRequestDto requestDto){
         userService.signup(requestDto);
         return "redirect:/login";
+    }
+
+    @PostMapping("/check-email")
+    @ResponseBody
+    public Map<String, Boolean> checkEmail(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        boolean isDuplicate = userService.checkEmailDuplicate(email);
+        return Map.of("isDuplicate", isDuplicate);
     }
 
     @GetMapping("/mypage")
@@ -57,10 +64,6 @@ public class UserController {
         String errorMessage = userService.modify(requestDto);
 
         if (errorMessage != null) {
-            // 실패 시, username을 DTO에 설정하여 리다이렉트
-            String username = SecurityContextHolder.getContext().getAuthentication().getName();
-            requestDto.setUsername(username);
-            
             redirectAttributes.addFlashAttribute("user", requestDto);
             redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
             return "redirect:/user/edit";

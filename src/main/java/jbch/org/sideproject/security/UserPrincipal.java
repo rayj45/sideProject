@@ -13,17 +13,22 @@ import java.util.Collections;
 public class UserPrincipal implements UserDetails {
 
     private final Long id;
-    private final String username;
+    private final String email; // username -> email
     private final String nickName;
     private final String password;
     private final Collection<? extends GrantedAuthority> authorities;
 
     public UserPrincipal(User user) {
         this.id = user.getId();
-        this.username = user.getUsername();
+        this.email = user.getEmail(); // email 초기화
         this.nickName = user.getNickName();
         this.password = user.getPassword();
         this.authorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email; // Spring Security의 'username'으로 email을 사용
     }
 
     @Override

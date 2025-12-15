@@ -25,14 +25,13 @@ public class SideProjectApplication {
     public CommandLineRunner initData(UserRepository userRepository, FaqRepository faqRepository, PasswordEncoder passwordEncoder) {
         return args -> {
             // Add admin user if not exists
-            if (userRepository.findByUsername("admin").isEmpty()) {
+            if (userRepository.findByEmail("rayj45@naver.com").isEmpty()) {
                 User adminUser = User.builder()
-                        .username("admin")
+                        .email("rayj45@naver.com")
                         .nickName("테스트관리자")
                         .password(passwordEncoder.encode("admin"))
                         .role(UserRole.ROLE_ADMIN)
                         .status(UserStatus.ACTIVE)
-                        .email("admin@example.com")
                         .build();
                 userRepository.save(adminUser);
             }

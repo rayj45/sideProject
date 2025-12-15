@@ -17,9 +17,6 @@ public class User extends BaseTimeEntity {
     private Long id;
 
     @Column(length = 50)
-    private String username;
-
-    @Column(length = 50)
     private String nickName;
 
     private String password;
@@ -27,7 +24,7 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    @Column(length = 100)
+    @Column(length = 100, unique = true, nullable = false)
     private String email;
 
     @Column(length = 20)
@@ -42,8 +39,7 @@ public class User extends BaseTimeEntity {
     private Boolean sellerApproved;
 
     @Builder
-    public User(String username, String nickName, String password, UserRole role, String email, String phone, String userGroup, UserStatus status, Boolean sellerApproved) {
-        this.username = username;
+    public User(String nickName, String password, UserRole role, String email, String phone, String userGroup, UserStatus status, Boolean sellerApproved) {
         this.nickName = nickName;
         this.password = password;
         this.role = role;
