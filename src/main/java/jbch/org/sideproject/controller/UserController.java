@@ -7,6 +7,7 @@ import jbch.org.sideproject.request.UserSignupRequestDto;
 import jbch.org.sideproject.response.MyPageResponseDto;
 import jbch.org.sideproject.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -25,12 +26,21 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/signup")
-    public String signupPage(){
+    public String signupPage(Model model){
+        // th:object를 사용하지 않으므로 빈 객체를 보낼 필요가 없음
         return "signup";
     }
 
     @PostMapping("/signup")
-    public String signup(@ModelAttribute UserSignupRequestDto requestDto){
+    public String signup(HttpServletRequest request) {
+        
+        UserSignupRequestDto requestDto = new UserSignupRequestDto();
+        requestDto.setEmail(request.getParameter("email"));
+        requestDto.setNickName(request.getParameter("nickName"));
+        requestDto.setPassword(request.getParameter("password"));
+        requestDto.setPhone(request.getParameter("phone"));
+        requestDto.setUserGroup(request.getParameter("userGroup"));
+
         userService.signup(requestDto);
         return "redirect:/login";
     }
@@ -60,7 +70,7 @@ public class UserController {
     }
 
     @PostMapping("/edit")
-    public String edit(@ModelAttribute UserEditRequestDto requestDto, RedirectAttributes redirectAttributes) {
+    public String edit(@ModelAttribute("user") UserEditRequestDto requestDto, RedirectAttributes redirectAttributes) {
         String errorMessage = userService.modify(requestDto);
 
         if (errorMessage != null) {
@@ -80,5 +90,23 @@ public class UserController {
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }
         return "redirect:/";
+    }
+
+    @PostMapping("/send-verification")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> sendVerificationCode(@RequestBody Map<String, String> request) {
+        try {
+            userService.sendVerificationCode(request.get("email"));
+            return ResponseEntity.ok(Map.of("success", true));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/verify-code")
+    @ResponseBody
+    public Map<String, Boolean> verifyCode(@RequestBody Map<String, String> request) {
+        boolean isVerified = userService.verifyCode(request.get("email"), request.get("code"));
+        return Map.of("isVerified", isVerified);
     }
 }
