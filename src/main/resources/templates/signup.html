@@ -109,6 +109,11 @@ $(document).ready(function() {
     $(document).on('click', '#send-code-btn', function() {
         const email = $('#email').val();
         const feedback = $('#email-feedback');
+        const sendBtn = $(this);
+
+        // 1. 즉시 피드백 제공 및 버튼 비활성화
+        feedback.html('<span class="text-info">인증번호를 발송하고 있습니다...</span>');
+        sendBtn.prop('disabled', true);
 
         $.ajax({
             url: '/user/send-verification',
@@ -116,15 +121,19 @@ $(document).ready(function() {
             contentType: 'application/json',
             data: JSON.stringify({ email: email }),
             success: function(response) {
+                // 2. 성공 시 결과 업데이트
                 if (response.success) {
                     feedback.html('<span class="text-success">인증번호가 발송되었습니다. 5분 안에 입력해주세요.</span>');
                     $('#verification-code-area').show();
                 } else {
                     feedback.html('<span class="text-danger">❌ ' + response.message + '</span>');
+                    sendBtn.prop('disabled', false); // 실패 시 버튼 다시 활성화
                 }
             },
             error: function() {
+                // 3. 에러 발생 시 결과 업데이트
                 feedback.html('<span class="text-danger">메일 발송에 실패했습니다. 다시 시도해주세요.</span>');
+                sendBtn.prop('disabled', false); // 실패 시 버튼 다시 활성화
             }
         });
     });
@@ -143,11 +152,8 @@ $(document).ready(function() {
                 if (response.isVerified) {
                     feedback.html('<span class="text-success">✔️ 이메일 인증이 완료되었습니다.</span>');
                     isEmailVerified = true;
-
-                    // [수정] email 필드는 readonly로, 나머지 버튼들은 disabled로 처리
                     $('#email').prop('readonly', true);
                     $('#check-email-btn, #verification-code, #verify-code-btn, #send-code-btn').prop('disabled', true);
-
                     $('#signup-btn').prop('disabled', false);
                 } else {
                     feedback.html('<span class="text-danger">❌ 인증번호가 일치하지 않습니다.</span>');
