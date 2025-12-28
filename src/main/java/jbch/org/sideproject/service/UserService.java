@@ -120,6 +120,50 @@ public class UserService {
         return false;
     }
 
+    public void sendPasswordResetCode(String email) {
+        if (!checkEmailDuplicate(email)) {
+            throw new IllegalArgumentException("가입되지 않은 이메일입니다.");
+        }
+        String code = createVerificationCode();
+        emailService.sendVerificationCode(email, code); // 기존 메서드 재활용
+
+        httpSession.setAttribute("resetPasswordCode", code);
+        httpSession.setAttribute("resetPasswordEmail", email);
+        httpSession.setMaxInactiveInterval(300); // 5분
+    }
+
+    public boolean verifyPasswordResetCode(String email, String code) {
+        String sessionCode = (String) httpSession.getAttribute("resetPasswordCode");
+        String sessionEmail = (String) httpSession.getAttribute("resetPasswordEmail");
+
+        if (sessionCode != null && sessionEmail != null && sessionEmail.equals(email) && sessionCode.equals(code)) {
+            httpSession.setAttribute("passwordResetVerified", true); // 인증 완료 상태 저장
+            httpSession.setAttribute("passwordResetEmail", email); // 이메일 정보 유지
+            return true;
+        }
+        return false;
+    }
+
+    @Transactional
+    public void resetPassword(String newPassword) {
+        Boolean isVerified = (Boolean) httpSession.getAttribute("passwordResetVerified");
+        String email = (String) httpSession.getAttribute("passwordResetEmail");
+
+        if (isVerified == null || !isVerified || email == null) {
+            throw new IllegalStateException("이메일 인증이 완료되지 않았습니다.");
+        }
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        
+        user.changePassword(passwordEncoder.encode(newPassword));
+
+        // 비밀번호 재설정 후 세션 정보 정리
+        httpSession.removeAttribute("passwordResetVerified");
+        httpSession.removeAttribute("passwordResetEmail");
+        httpSession.removeAttribute("resetPasswordCode");
+    }
+
     private String createVerificationCode() {
         Random random = new Random();
         int code = 100000 + random.nextInt(900000); // 6자리 난수 생성

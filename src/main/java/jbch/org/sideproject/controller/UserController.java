@@ -33,14 +33,13 @@ public class UserController {
 
     @PostMapping("/signup")
     public String signup(HttpServletRequest request) {
-        
         UserSignupRequestDto requestDto = new UserSignupRequestDto();
         requestDto.setEmail(request.getParameter("email"));
         requestDto.setNickName(request.getParameter("nickName"));
         requestDto.setPassword(request.getParameter("password"));
         requestDto.setPhone(request.getParameter("phone"));
         requestDto.setUserGroup(request.getParameter("userGroup"));
-
+        
         userService.signup(requestDto);
         return "redirect:/login";
     }
@@ -108,5 +107,40 @@ public class UserController {
     public Map<String, Boolean> verifyCode(@RequestBody Map<String, String> request) {
         boolean isVerified = userService.verifyCode(request.get("email"), request.get("code"));
         return Map.of("isVerified", isVerified);
+    }
+
+    @GetMapping("/find-password")
+    public String findPasswordPage() {
+        return "find-password";
+    }
+
+    @PostMapping("/send-password-reset-code")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> sendPasswordResetCode(@RequestBody Map<String, String> request) {
+        try {
+            userService.sendPasswordResetCode(request.get("email"));
+            return ResponseEntity.ok(Map.of("success", true));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/verify-password-reset-code")
+    @ResponseBody
+    public Map<String, Boolean> verifyPasswordResetCode(@RequestBody Map<String, String> request) {
+        boolean isVerified = userService.verifyPasswordResetCode(request.get("email"), request.get("code"));
+        return Map.of("isVerified", isVerified);
+    }
+
+    @PostMapping("/reset-password")
+    public String resetPassword(@RequestParam String newPassword, RedirectAttributes redirectAttributes) {
+        try {
+            userService.resetPassword(newPassword);
+            redirectAttributes.addFlashAttribute("successMessage", "비밀번호가 성공적으로 변경되었습니다. 다시 로그인해주세요.");
+            return "redirect:/login";
+        } catch (IllegalStateException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/user/find-password";
+        }
     }
 }

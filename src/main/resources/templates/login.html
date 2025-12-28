@@ -25,6 +25,7 @@
                     <div th:if="${param.logout}" class="alert alert-success" role="alert">
                         로그아웃 되었습니다.
                     </div>
+                    <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}"></div>
 
                     <div class="form-floating mb-3">
                         <input type="email" class="form-control" id="email" name="email" placeholder="이메일" required autofocus>
@@ -38,6 +39,9 @@
                     <div class="d-grid gap-2 mt-3">
                         <button class="btn btn-lg btn-primary" type="submit">로그인</button>
                         <a href="/user/signup" class="btn btn-lg btn-secondary">회원가입</a>
+                    </div>
+                    <div class="text-center mt-3">
+                        <a href="/user/find-password">비밀번호를 잊으셨나요?</a>
                     </div>
                 </form>
             </div>

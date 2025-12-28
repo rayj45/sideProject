@@ -22,10 +22,21 @@
             <div class="col-md-6">
                 <h1 class="text-center mb-4">회원가입</h1>
                 <form id="signup-form" th:action="@{/user/signup}" method="post">
+                    <!-- 숨겨진 전체 이메일 필드 -->
+                    <input type="hidden" id="email" name="email">
+
                     <div class="mb-3">
-                        <label for="email" class="form-label">이메일 (아이디)</label>
+                        <label class="form-label">이메일 (아이디)</label>
                         <div class="input-group">
-                            <input type="email" class="form-control" id="email" name="email" required>
+                            <input type="text" class="form-control" id="email-id" required>
+                            <span class="input-group-text">@</span>
+                            <input type="text" class="form-control" id="email-domain-custom">
+                            <select class="form-select" id="email-domain-select">
+                                <option value="custom">직접 입력</option>
+                                <option value="naver.com">naver.com</option>
+                                <option value="gmail.com">gmail.com</option>
+                                <option value="daum.net">daum.net</option>
+                            </select>
                             <button class="btn btn-outline-secondary" type="button" id="check-email-btn">중복 검사</button>
                         </div>
                         <div id="email-feedback" class="mt-2"></div>
@@ -82,7 +93,29 @@ $(document).ready(function() {
 
     let isEmailVerified = false;
 
+    function combineEmail() {
+        const id = $('#email-id').val();
+        const domain = $('#email-domain-select').val() === 'custom' ? $('#email-domain-custom').val() : $('#email-domain-select').val();
+        if (id && domain) {
+            $('#email').val(id + '@' + domain);
+        } else {
+            $('#email').val('');
+        }
+    }
+
+    $('#email-domain-select').on('change', function() {
+        if ($(this).val() === 'custom') {
+            $('#email-domain-custom').show().focus();
+        } else {
+            $('#email-domain-custom').hide();
+        }
+        combineEmail();
+    });
+
+    $('#email-id, #email-domain-custom').on('input', combineEmail);
+
     $('#check-email-btn').on('click', function() {
+        combineEmail(); // 중복 검사 전 최종 이메일 조합
         const email = $('#email').val();
         const feedback = $('#email-feedback');
 
@@ -111,7 +144,6 @@ $(document).ready(function() {
         const feedback = $('#email-feedback');
         const sendBtn = $(this);
 
-        // 1. 즉시 피드백 제공 및 버튼 비활성화
         feedback.html('<span class="text-info">인증번호를 발송하고 있습니다...</span>');
         sendBtn.prop('disabled', true);
 
@@ -121,19 +153,17 @@ $(document).ready(function() {
             contentType: 'application/json',
             data: JSON.stringify({ email: email }),
             success: function(response) {
-                // 2. 성공 시 결과 업데이트
                 if (response.success) {
                     feedback.html('<span class="text-success">인증번호가 발송되었습니다. 5분 안에 입력해주세요.</span>');
                     $('#verification-code-area').show();
                 } else {
                     feedback.html('<span class="text-danger">❌ ' + response.message + '</span>');
-                    sendBtn.prop('disabled', false); // 실패 시 버튼 다시 활성화
+                    sendBtn.prop('disabled', false);
                 }
             },
             error: function() {
-                // 3. 에러 발생 시 결과 업데이트
                 feedback.html('<span class="text-danger">메일 발송에 실패했습니다. 다시 시도해주세요.</span>');
-                sendBtn.prop('disabled', false); // 실패 시 버튼 다시 활성화
+                sendBtn.prop('disabled', false);
             }
         });
     });
@@ -152,8 +182,7 @@ $(document).ready(function() {
                 if (response.isVerified) {
                     feedback.html('<span class="text-success">✔️ 이메일 인증이 완료되었습니다.</span>');
                     isEmailVerified = true;
-                    $('#email').prop('readonly', true);
-                    $('#check-email-btn, #verification-code, #verify-code-btn, #send-code-btn').prop('disabled', true);
+                    $('#email-id, #email-domain-custom, #email-domain-select, #check-email-btn, #verification-code, #verify-code-btn, #send-code-btn').prop('disabled', true);
                     $('#signup-btn').prop('disabled', false);
                 } else {
                     feedback.html('<span class="text-danger">❌ 인증번호가 일치하지 않습니다.</span>');
@@ -163,7 +192,7 @@ $(document).ready(function() {
         });
     });
 
-    $('#email').on('input', function() {
+    $('#email-id, #email-domain-custom, #email-domain-select').on('input change', function() {
         isEmailVerified = false;
         $('#email-feedback').empty();
         $('#verification-code-area').hide();
@@ -171,6 +200,7 @@ $(document).ready(function() {
     });
 
     $('#signup-form').on('submit', function(e) {
+        combineEmail(); // 제출 전 최종 이메일 조합
         const password = $('#password');
         const passwordConfirm = $('#password-confirm');
 
