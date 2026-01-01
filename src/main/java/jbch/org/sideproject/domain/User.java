@@ -30,7 +30,7 @@ public class User extends BaseTimeEntity {
     @Column(length = 20)
     private String phone;
 
-    @Column(name = "userGroup", length = 100)
+    @Column(name = "user_group", length = 100)
     private String userGroup;
 
     @Enumerated(EnumType.STRING)
@@ -57,8 +57,16 @@ public class User extends BaseTimeEntity {
         this.userGroup = userGroup;
     }
 
-    // 비밀번호 변경 메서드
     public void changePassword(String newPassword) {
         this.password = newPassword;
+    }
+
+    public void adminModifyInfo(String nickName, String phone, String userGroup, UserRole role, UserStatus status, Boolean sellerApproved) {
+        this.nickName = nickName;
+        this.phone = phone;
+        this.userGroup = userGroup;
+        this.role = role;
+        this.status = status;
+        this.sellerApproved = sellerApproved;
     }
 }

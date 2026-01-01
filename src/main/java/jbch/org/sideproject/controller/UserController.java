@@ -27,7 +27,6 @@ public class UserController {
 
     @GetMapping("/signup")
     public String signupPage(Model model){
-        // th:object를 사용하지 않으므로 빈 객체를 보낼 필요가 없음
         return "signup";
     }
 
@@ -104,9 +103,9 @@ public class UserController {
 
     @PostMapping("/verify-code")
     @ResponseBody
-    public Map<String, Boolean> verifyCode(@RequestBody Map<String, String> request) {
-        boolean isVerified = userService.verifyCode(request.get("email"), request.get("code"));
-        return Map.of("isVerified", isVerified);
+    public Map<String, String> verifyCode(@RequestBody Map<String, String> request) {
+        UserService.VerificationResult result = userService.verifyCode(request.get("email"), request.get("code"));
+        return Map.of("status", result.name());
     }
 
     @GetMapping("/find-password")
@@ -127,9 +126,9 @@ public class UserController {
 
     @PostMapping("/verify-password-reset-code")
     @ResponseBody
-    public Map<String, Boolean> verifyPasswordResetCode(@RequestBody Map<String, String> request) {
-        boolean isVerified = userService.verifyPasswordResetCode(request.get("email"), request.get("code"));
-        return Map.of("isVerified", isVerified);
+    public Map<String, String> verifyPasswordResetCode(@RequestBody Map<String, String> request) {
+        UserService.VerificationResult result = userService.verifyPasswordResetCode(request.get("email"), request.get("code"));
+        return Map.of("status", result.name());
     }
 
     @PostMapping("/reset-password")

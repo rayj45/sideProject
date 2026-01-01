@@ -22,8 +22,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/", "/login", "/user/signup", "/user/check-email", "/user/send-verification", "/user/verify-code", "/user/find-password", "/user/send-password-reset-code", "/user/verify-password-reset-code", "/user/reset-password", "/about", "/faq/list", "/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers("/notice/**", "/archive/**").authenticated()
-                        .requestMatchers("/faq/write", "/faq/modify/**", "/faq/delete/**").hasRole("ADMIN")
+                        .requestMatchers("/faq/write", "/faq/modify/**", "/faq/delete/**", "/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll()
+//                        .requestMatchers("/admin/**").hasRole("ADMIN")
+//                        .requestMatchers("/", "/login", "/user/**", "/about", "/faq/list", "/css/**", "/js/**", "/images/**").permitAll()
+//                        .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")

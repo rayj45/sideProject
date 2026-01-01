@@ -26,6 +26,12 @@ public class UserService {
     private final EmailService emailService;
     private final HttpSession httpSession;
 
+    public enum VerificationResult {
+        SUCCESS,
+        FAILURE,
+        EXPIRED
+    }
+
     public void signup(UserSignupRequestDto requestDto) {
         if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
             throw new IllegalArgumentException("이미 가입된 이메일입니다.");
@@ -99,25 +105,27 @@ public class UserService {
             throw new IllegalArgumentException("이미 가입된 이메일입니다.");
         }
 
-        String code = createVerificationCode(); //난수 생성
+        String code = createVerificationCode();
         emailService.sendVerificationCode(email, code);
 
-        // 세션에 인증번호와 이메일 저장 (유효시간 5분)
         httpSession.setAttribute("verificationCode", code);
         httpSession.setAttribute("verificationEmail", email);
-        httpSession.setMaxInactiveInterval(300); // 5분
+        httpSession.setMaxInactiveInterval(300);
     }
 
-    public boolean verifyCode(String email, String code) {
+    public VerificationResult verifyCode(String email, String code) {
         String sessionCode = (String) httpSession.getAttribute("verificationCode");
         String sessionEmail = (String) httpSession.getAttribute("verificationEmail");
 
-        if (sessionCode != null && sessionEmail != null && sessionEmail.equals(email) && sessionCode.equals(code)) {
-            httpSession.removeAttribute("verificationCode"); // 인증 성공 시 세션에서 제거
-            httpSession.removeAttribute("verificationEmail");
-            return true;
+        if (sessionCode == null || sessionEmail == null) {
+            return VerificationResult.EXPIRED;
         }
-        return false;
+        if (sessionEmail.equals(email) && sessionCode.equals(code)) {
+            httpSession.removeAttribute("verificationCode");
+            httpSession.removeAttribute("verificationEmail");
+            return VerificationResult.SUCCESS;
+        }
+        return VerificationResult.FAILURE;
     }
 
     public void sendPasswordResetCode(String email) {
@@ -125,23 +133,26 @@ public class UserService {
             throw new IllegalArgumentException("가입되지 않은 이메일입니다.");
         }
         String code = createVerificationCode();
-        emailService.sendVerificationCode(email, code); // 기존 메서드 재활용
+        emailService.sendVerificationCode(email, code);
 
         httpSession.setAttribute("resetPasswordCode", code);
         httpSession.setAttribute("resetPasswordEmail", email);
-        httpSession.setMaxInactiveInterval(300); // 5분
+        httpSession.setMaxInactiveInterval(300);
     }
 
-    public boolean verifyPasswordResetCode(String email, String code) {
+    public VerificationResult verifyPasswordResetCode(String email, String code) {
         String sessionCode = (String) httpSession.getAttribute("resetPasswordCode");
         String sessionEmail = (String) httpSession.getAttribute("resetPasswordEmail");
 
-        if (sessionCode != null && sessionEmail != null && sessionEmail.equals(email) && sessionCode.equals(code)) {
-            httpSession.setAttribute("passwordResetVerified", true); // 인증 완료 상태 저장
-            httpSession.setAttribute("passwordResetEmail", email); // 이메일 정보 유지
-            return true;
+        if (sessionCode == null || sessionEmail == null) {
+            return VerificationResult.EXPIRED;
         }
-        return false;
+        if (sessionEmail.equals(email) && sessionCode.equals(code)) {
+            httpSession.setAttribute("passwordResetVerified", true);
+            httpSession.setAttribute("passwordResetEmail", email);
+            return VerificationResult.SUCCESS;
+        }
+        return VerificationResult.FAILURE;
     }
 
     @Transactional
@@ -158,7 +169,6 @@ public class UserService {
         
         user.changePassword(passwordEncoder.encode(newPassword));
 
-        // 비밀번호 재설정 후 세션 정보 정리
         httpSession.removeAttribute("passwordResetVerified");
         httpSession.removeAttribute("passwordResetEmail");
         httpSession.removeAttribute("resetPasswordCode");
@@ -166,7 +176,7 @@ public class UserService {
 
     private String createVerificationCode() {
         Random random = new Random();
-        int code = 100000 + random.nextInt(900000); // 6자리 난수 생성
+        int code = 100000 + random.nextInt(900000);
         return String.valueOf(code);
     }
 }
