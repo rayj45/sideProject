@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>부속실 상세</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+</head>
+<body>
+<div th:replace="~{fragments/header-sub :: header-sub}"></div>
+<main class="main-content">
+    <div class="container">
+        <h1 class="mb-4">부속실 상세</h1>
+        <div class="card">
+            <div class="card-header" th:text="${room.name}"></div>
+            <div class="card-body">
+                <p><strong>수용인원:</strong> <span th:text="${room.capacity}"></span>명</p>
+                <p><strong>상태:</strong> <span th:text="${room.status.name()}"></span></p>
+                <p><strong>설명:</strong> <span th:text="${room.description}"></span></p>
+                <hr>
+                <p><strong>이미지:</strong></p>
+                <div class="row">
+                    <div th:each="image : ${room.images}" class="col-md-4 mb-3">
+                        <img th:src="@{${image.path}}" class="img-fluid rounded" alt="Room Image">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="mt-3 text-end">
+            <a href="/admin/room/list" class="btn btn-secondary">목록</a>
+            <a th:href="@{/admin/room/modify/{roomId}(roomId=${room.id})}" class="btn btn-primary">수정</a>
+            <form th:action="@{/admin/user/delete/{userId}(userId=${room.id})}" method="post" style="display:inline;" onsubmit="return confirm('정말로 삭제하시겠습니까?');">
+                <button type="submit" class="btn btn-danger">삭제</button>
+            </form>
+        </div>
+    </div>
+</main>
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

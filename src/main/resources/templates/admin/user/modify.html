@@ -41,7 +41,7 @@
                             <option th:each="roleValue : ${T(jbch.org.sideproject.domain.UserRole).values()}"
                                     th:value="${roleValue}"
                                     th:text="${roleValue.name()}"
-                                    th:selected="${roleValue == user.role}"></option>
+                                    th:selected="${user.role != null and roleValue.name() == user.role.name()}"></option>
                         </select>
                     </div>
                     <div class="mb-3">
@@ -50,7 +50,7 @@
                             <option th:each="statusValue : ${T(jbch.org.sideproject.domain.UserStatus).values()}"
                                     th:value="${statusValue}"
                                     th:text="${statusValue.name()}"
-                                    th:selected="${statusValue == user.status}"></option>
+                                    th:selected="${user.status != null and statusValue.name() == user.status.name()}"></option>
                         </select>
                     </div>
                     <div class="form-check mb-3">
