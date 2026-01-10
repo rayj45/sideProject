@@ -5,12 +5,21 @@
     <title>예약 신청</title>
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Flatpickr CSS (Datepicker) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <style>
-        .time-slot.reserved { background-color: #f8d7da; color: #58151c; }
-        .time-slot.requested { background-color: #fff3cd; color: #664d03; }
+        .time-slot.reserved { background-color: #fff3cd; color: #664d03; } /* 예약중 */
+        .time-slot.completed { background-color: #d1e7dd; color: #0f5132; } /* 사용완료 */
+        /* Flatpickr 커스텀 스타일 */
+        .flatpickr-calendar { font-family: 'Pretendard', sans-serif; }
+        .input-group-text { background-color: #fff; border-left: 0; cursor: pointer; }
+        #reservationDate { border-right: 0; }
     </style>
 </head>
 <body>
@@ -40,7 +49,10 @@
         <div class="row mb-4">
             <div class="col-md-4">
                 <label for="reservationDate" class="form-label">날짜 선택</label>
-                <input type="date" class="form-control" id="reservationDate" th:value="${selectedDate}">
+                <div class="input-group">
+                    <input type="text" class="form-control bg-white" id="reservationDate" th:value="${selectedDate}" readonly>
+                    <span class="input-group-text" id="calendar-icon">📅</span>
+                </div>
             </div>
         </div>
 
@@ -61,29 +73,37 @@
                             <option th:each="time : ${timeSlots}" th:value="${time}" th:text="${time}"></option>
                         </select>
                     </div>
+                    <div class="mb-3">
+                        <label for="reason" class="form-label">예약 사유</label>
+                        <textarea class="form-control" id="reason" rows="3" placeholder="예약 사유를 입력해주세요."></textarea>
+                    </div>
                     <div class="d-grid">
                         <button id="submit-reservation" class="btn btn-primary">예약 신청</button>
                     </div>
+                    <p id="past-date-warning" class="text-danger mt-2 text-center" style="display: none;">과거 날짜는 예약할 수 없습니다.</p>
                 </div>
             </div>
 
             <!-- 예약 현황 -->
             <div class="col-md-7">
                 <h5>예약 현황</h5>
-                <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+                <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
                     <table class="table table-bordered text-center">
                         <thead>
                             <tr>
                                 <th>시간</th>
                                 <th>상태</th>
                                 <th>예약자</th>
+                                <th>사유</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:each="slot : ${reservationStatus}" th:classappend="${slot.status != null} ? (${slot.status.name() == 'APPROVED'} ? 'reserved' : 'requested') : ''">
+                            <tr th:each="slot : ${reservationStatus}"
+                                th:classappend="${slot.status != null} ? (${slot.status.name() == 'APPROVED'} ? 'time-slot reserved' : (${slot.status.name() == 'COMPLETED'} ? 'time-slot completed' : '')) : ''">
                                 <td th:text="${slot.time}"></td>
-                                <td th:text="${slot.status != null ? slot.status.name() : '예약 가능'}"></td>
+                                <td th:text="${slot.status == null ? '예약 가능' : (slot.status.name() == 'APPROVED' ? '예약중' : (slot.status.name() == 'COMPLETED' ? '사용완료' : slot.status.name()))}"></td>
                                 <td th:text="${slot.reservedBy}"></td>
+                                <td th:text="${slot.reason}"></td>
                             </tr>
                         </tbody>
                     </table>
@@ -92,32 +112,131 @@
         </div>
 
         <div class="text-end mt-4">
-            <a th:href="@{/reservation/read/{roomId}(roomId=${room.id})}" class="btn btn-secondary">상세</a>
+            <a th:href="@{/reservation/read/{roomId}(roomId=${room.id})}" class="btn btn-secondary">뒤로가기</a>
         </div>
     </div>
 </main>
 <div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Flatpickr JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js"></script> <!-- 한국어 패치 -->
+
 <script>
 $(document).ready(function() {
     const token = $("meta[name='_csrf']").attr("content");
     const header = $("meta[name='_csrf_header']").attr("content");
     $(document).ajaxSend((e, xhr, options) => xhr.setRequestHeader(header, token));
 
-    $('#reservationDate').on('change', function() {
-        const date = $(this).val();
-        window.location.href = '/reservation/apply/' + [[${room.id}]] + '?date=' + date;
+    // 1. Flatpickr 초기화
+    const fp = flatpickr("#reservationDate", {
+        locale: "ko", // 한국어 설정
+        dateFormat: "Y-m-d",
+        defaultDate: "[[${selectedDate}]]", // 서버에서 넘어온 날짜로 초기화
+        onChange: function(selectedDates, dateStr, instance) {
+            // 날짜 변경 시 페이지 이동 (예약 현황 갱신을 위해)
+            window.location.href = '/reservation/apply/' + [[${room.id}]] + '?date=' + dateStr;
+        }
     });
 
+    // 달력 아이콘 클릭 시 달력 열기
+    $('#calendar-icon').on('click', function() {
+        fp.open();
+    });
+
+    // 2. 시간 필터링 및 버튼 제어 로직
+    function filterTimeSlots() {
+        const selectedDateStr = $('#reservationDate').val();
+        const selectedDate = new Date(selectedDateStr);
+        const today = new Date();
+
+        // 시간 비교를 위해 날짜 부분만 남기고 시간 초기화
+        selectedDate.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
+
+        const $submitBtn = $('#submit-reservation');
+        const $warningMsg = $('#past-date-warning');
+        const $timeOptions = $('#startTime option, #endTime option');
+
+        // 초기화: 모든 옵션 표시 및 버튼 활성화
+        $timeOptions.show();
+        $submitBtn.prop('disabled', false);
+        $submitBtn.text('예약 신청'); // 버튼 텍스트 초기화
+        $warningMsg.hide();
+
+        if (selectedDate < today) {
+            // Case 1: 과거 날짜인 경우
+            $submitBtn.prop('disabled', true);
+            $warningMsg.show();
+            // 모든 시간 옵션 숨김 (선택 불가)
+            $timeOptions.hide();
+        } else if (selectedDate.getTime() === today.getTime()) {
+            // Case 2: 오늘 날짜인 경우 -> 현재 시간 이전의 옵션 숨김
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+
+            // 현재 시간을 분으로 환산
+            const currentTotalMinutes = currentHour * 60 + currentMinute;
+
+            let firstVisibleValue = null;
+
+            $timeOptions.each(function() {
+                const timeStr = $(this).val(); // "09:30"
+                const [h, m] = timeStr.split(':').map(Number);
+                const optionTotalMinutes = h * 60 + m;
+
+                // 현재 시간보다 이전이면 숨김
+                if (optionTotalMinutes <= currentTotalMinutes) {
+                    $(this).hide();
+                } else {
+                    // 숨겨지지 않은 첫 번째 옵션 찾기
+                    if (!firstVisibleValue) {
+                        firstVisibleValue = timeStr;
+                    }
+                }
+            });
+
+            // 숨겨진 옵션이 선택되어 있을 수 있으므로, 첫 번째 보이는 옵션으로 값 변경
+            if (firstVisibleValue) {
+                $('#startTime').val(firstVisibleValue);
+                $('#endTime').val(firstVisibleValue);
+            } else {
+                // 만약 예약 가능한 시간이 하나도 없다면 버튼 비활성화
+                $submitBtn.prop('disabled', true);
+                $submitBtn.text('예약 가능한 시간이 없습니다');
+            }
+        }
+    }
+
+    // 페이지 로드 시 필터링 실행
+    filterTimeSlots();
+
+    // 3. 예약 신청 로직
     $('#submit-reservation').on('click', function() {
         const date = $('#reservationDate').val();
         const startTime = $('#startTime').val();
         const endTime = $('#endTime').val();
+        const reason = $('#reason').val(); // 예약 사유 가져오기
+
+        if (!startTime || !endTime) {
+            alert("시간을 선택해주세요.");
+            return;
+        }
+
+        if (!reason) {
+            alert("예약 사유를 입력해주세요.");
+            return;
+        }
 
         const reservationData = {
             roomId: [[${room.id}]],
             startTime: date + 'T' + startTime,
-            endTime: date + 'T' + endTime
+            endTime: date + 'T' + endTime,
+            reason: reason
         };
 
         $.ajax({

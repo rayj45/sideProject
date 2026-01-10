@@ -39,14 +39,18 @@ public class Reservation extends BaseTimeEntity {
     @Column(nullable = false)
     private ReservationStatus status;
 
+    @Column(length = 500)
+    private String reason; // 예약 사유 추가
+
     @Builder
-    public Reservation(User user, Room room, LocalDate reservationDate, LocalDateTime reservationStartTime, LocalDateTime reservationEndTime, ReservationStatus status) {
+    public Reservation(User user, Room room, LocalDate reservationDate, LocalDateTime reservationStartTime, LocalDateTime reservationEndTime, ReservationStatus status, String reason) {
         this.user = user;
         this.room = room;
         this.reservationDate = reservationDate;
         this.reservationStartTime = reservationStartTime;
         this.reservationEndTime = reservationEndTime;
         this.status = status;
+        this.reason = reason;
     }
 
     public void updateStatus(ReservationStatus status) {

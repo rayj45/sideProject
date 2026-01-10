@@ -77,7 +77,8 @@ public class ReservationService {
                 .reservationDate(reservationStartTime.toLocalDate())
                 .reservationStartTime(reservationStartTime)
                 .reservationEndTime(reservationEndTime)
-                .status(ReservationStatus.REQUESTED)
+                .status(ReservationStatus.APPROVED)
+                .reason(requestDto.getReason()) // 예약 사유 추가
                 .build();
         
         reservationRepository.save(reservation);
