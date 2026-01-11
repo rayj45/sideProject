@@ -46,6 +46,9 @@
                         <label for="verification-code" class="form-label">인증번호</label>
                         <div class="input-group">
                             <input type="text" class="form-control" id="verification-code">
+                            <span class="input-group-text bg-white text-danger" id="timer-display" style="display: none;">
+                                ⏱️ <span id="timer">05:00</span>
+                            </span>
                             <button class="btn btn-outline-primary" type="button" id="verify-code-btn">인증 확인</button>
                         </div>
                     </div>
@@ -97,6 +100,31 @@ $(document).ready(function() {
     });
 
     let isEmailVerified = false;
+    let timerInterval;
+
+    function startTimer(duration, display) {
+        let timer = duration, minutes, seconds;
+        $('#timer-display').show();
+
+        clearInterval(timerInterval); // 기존 타이머가 있다면 중지
+
+        timerInterval = setInterval(function () {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            display.text(minutes + ":" + seconds);
+
+            if (--timer < 0) {
+                clearInterval(timerInterval);
+                display.text("만료");
+                $('#verify-code-btn').prop('disabled', true);
+                $('#email-feedback').html('<span class="text-danger">인증 시간이 만료되었습니다. 재발송 버튼을 눌러주세요.</span> <button type="button" class="btn btn-sm btn-outline-danger ms-2" id="resend-code-btn">재발송</button>');
+            }
+        }, 1000);
+    }
 
     function combineEmail() {
         const id = $('#email-id').val();
@@ -161,6 +189,8 @@ $(document).ready(function() {
                 if (response.success) {
                     feedback.html('<span class="text-success">인증번호가 발송되었습니다. 5분 안에 입력해주세요.</span>');
                     $('#verification-code-area').show();
+                    $('#verify-code-btn').prop('disabled', false); // 버튼 활성화
+                    startTimer(300, $('#timer')); // 5분 타이머 시작
                 } else {
                     feedback.html('<span class="text-danger">❌ ' + response.message + '</span>');
                     sendBtn.prop('disabled', false);
@@ -187,11 +217,15 @@ $(document).ready(function() {
                 if (response.status === 'SUCCESS') {
                     feedback.html('<span class="text-success">✔️ 이메일 인증이 완료되었습니다.</span>');
                     isEmailVerified = true;
+                    clearInterval(timerInterval); // 타이머 중지
+                    $('#timer-display').hide();
                     $('#email-id, #email-domain-custom, #email-domain-select, #check-email-btn, #verification-code, #verify-code-btn, #send-code-btn').prop('disabled', true);
                     $('#signup-btn').prop('disabled', false);
                 } else if (response.status === 'EXPIRED') {
                     feedback.html('<span class="text-danger">❌ 인증번호가 만료되었습니다.</span> <button type="button" class="btn btn-sm btn-outline-danger ms-2" id="resend-code-btn">재발송</button>');
                     isEmailVerified = false;
+                    clearInterval(timerInterval);
+                    $('#timer-display').text("만료");
                 } else {
                     feedback.html('<span class="text-danger">❌ 인증번호가 일치하지 않습니다.</span>');
                     isEmailVerified = false;
@@ -201,7 +235,8 @@ $(document).ready(function() {
     });
 
     $(document).on('click', '#resend-code-btn', function() {
-        $('#check-email-btn').click();
+        // 재발송 버튼 클릭 시, 인증번호 발송 버튼을 활성화하고 클릭 이벤트를 트리거
+        $('#send-code-btn').prop('disabled', false).click();
     });
 
     $('#email-id, #email-domain-custom, #email-domain-select').on('input change', function() {
@@ -209,6 +244,8 @@ $(document).ready(function() {
         $('#email-feedback').empty();
         $('#verification-code-area').hide();
         $('#signup-btn').prop('disabled', true);
+        clearInterval(timerInterval); // 입력 변경 시 타이머 초기화
+        $('#timer-display').hide();
     });
 
     $('#signup-form').on('submit', function(e) {
