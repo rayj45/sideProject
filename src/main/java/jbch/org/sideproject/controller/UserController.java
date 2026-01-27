@@ -96,7 +96,7 @@ public class UserController {
         try {
             userService.sendVerificationCode(request.get("email"));
             return ResponseEntity.ok(Map.of("success", true));
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
         }
     }
@@ -119,7 +119,7 @@ public class UserController {
         try {
             userService.sendPasswordResetCode(request.get("email"));
             return ResponseEntity.ok(Map.of("success", true));
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("success", false, "message", e.getMessage()));
         }
     }

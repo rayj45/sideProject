@@ -196,8 +196,13 @@ $(document).ready(function() {
                     sendBtn.prop('disabled', false);
                 }
             },
-            error: function() {
-                feedback.html('<span class="text-danger">메일 발송에 실패했습니다. 다시 시도해주세요.</span>');
+            error: function(xhr) {
+                // 서버에서 보낸 에러 메시지 표시
+                let message = "메일 발송에 실패했습니다. 다시 시도해주세요.";
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                feedback.html('<span class="text-danger">' + message + '</span>');
                 sendBtn.prop('disabled', false);
             }
         });
@@ -219,7 +224,7 @@ $(document).ready(function() {
                     isEmailVerified = true;
                     clearInterval(timerInterval); // 타이머 중지
                     $('#timer-display').hide();
-                    $('#email-id, #email-domain-custom, #email-domain-select, #check-email-btn, #verification-code, #verify-code-btn, #send-code-btn').prop('disabled', true);
+                    $('#email-id, #email-domain-custom, #email-domain-select, #check-email-btn, #verification-code, #verify-code-btn, #send-code-btn, #resend-code-btn').prop('disabled', true);
                     $('#signup-btn').prop('disabled', false);
                 } else if (response.status === 'EXPIRED') {
                     feedback.html('<span class="text-danger">❌ 인증번호가 만료되었습니다.</span> <button type="button" class="btn btn-sm btn-outline-danger ms-2" id="resend-code-btn">재발송</button>');
