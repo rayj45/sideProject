@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "user")
+@Table(name = "users") // PostgreSQL 예약어 회피를 위해 테이블명 변경
 public class User extends BaseTimeEntity {
 
     @Id
