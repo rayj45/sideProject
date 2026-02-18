@@ -67,7 +67,7 @@
                 <select id="status" name="status" class="form-select">
                     <option th:each="statusValue : ${T(jbch.org.sideproject.domain.RoomStatus).values()}"
                             th:value="${statusValue}"
-                            th:text="${statusValue.name()}"
+                            th:text="${statusValue.name() == 'AVAILABLE' ? '사용 가능' : '사용 불가'}"
                             th:selected="${room.status != null and statusValue.name() == room.status.name()}"></option>
                 </select>
             </div>

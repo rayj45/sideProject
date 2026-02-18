@@ -25,36 +25,50 @@
 <div th:replace="~{fragments/header-sub :: header-sub}"></div>
 <main class="main-content">
     <div class="container">
-        <h1 class="mb-4">부속실 관리</h1>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>부속실 관리</h1>
+            <form class="d-flex" method="get" th:action="@{/admin/room/list}">
+                <input class="form-control form-control-sm me-2" type="search" placeholder="그룹명 검색" name="searchGroup" th:value="${searchGroup}">
+                <button class="btn btn-primary btn-sm" type="submit">검색</button>
+            </form>
+        </div>
 
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            <div class="col" th:each="room : ${rooms.content}">
-                <div class="card h-100" th:data-url="@{/admin/room/read/{roomId}(roomId=${room.id})}">
-                    <img th:src="${room.thumbnailPath != null ? room.thumbnailPath : '/images/no-image.png'}" class="card-img-top" alt="Room Thumbnail">
-                    <div class="card-body">
-                        <h5 class="card-title" th:text="${room.name}"></h5>
-                        <p class="card-text">
-                            수용인원: <span th:text="${room.capacity}"></span>명<br>
-                            상태: <span th:text="${room.status.name()}"></span>
-                        </p>
+        <!-- 데이터가 있을 때 -->
+        <div th:if="${rooms.totalElements > 0}">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                <div class="col" th:each="room : ${rooms.content}">
+                    <div class="card h-100" th:data-url="@{/admin/room/read/{roomId}(roomId=${room.id})}">
+                        <img th:src="${room.thumbnailPath != null ? room.thumbnailPath : '/images/no-image.png'}" class="card-img-top" alt="Room Thumbnail">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${room.name}"></h5>
+                            <p class="card-text">
+                                수용인원: <span th:text="${room.capacity}"></span>명<br>
+                                상태: <span th:text="${room.status.name() == 'AVAILABLE' ? '사용 가능' : '사용 불가'}"></span><br>
+                                소속: <span th:text="${room.roomGroup}"></span>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
+            <nav aria-label="Page navigation" class="mt-5">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${rooms.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/room/list(page=${rooms.number - 1}, searchGroup=${searchGroup})}">이전</a>
+                    </li>
+                    <li class="page-item" th:each="page : ${#numbers.sequence(T(java.lang.Math).max(0, rooms.number - 2), T(java.lang.Math).min(rooms.totalPages - 1, rooms.number + 2))}" th:classappend="${page == rooms.number} ? 'active'">
+                        <a class="page-link" th:href="@{/admin/room/list(page=${page}, searchGroup=${searchGroup})}" th:text="${page + 1}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${rooms.last} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/room/list(page=${rooms.number + 1}, searchGroup=${searchGroup})}">다음</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
 
-        <nav aria-label="Page navigation" th:if="${rooms.totalPages > 0}" class="mt-5">
-            <ul class="pagination justify-content-center">
-                <li class="page-item" th:classappend="${rooms.first} ? 'disabled'">
-                    <a class="page-link" th:href="@{/admin/room/list(page=${rooms.number - 1})}">이전</a>
-                </li>
-                <li class="page-item" th:each="page : ${#numbers.sequence(T(java.lang.Math).max(0, rooms.number - 2), T(java.lang.Math).min(rooms.totalPages - 1, rooms.number + 2))}" th:classappend="${page == rooms.number} ? 'active'">
-                    <a class="page-link" th:href="@{/admin/room/list(page=${page})}" th:text="${page + 1}"></a>
-                </li>
-                <li class="page-item" th:classappend="${rooms.last} ? 'disabled'">
-                    <a class="page-link" th:href="@{/admin/room/list(page=${rooms.number + 1})}">다음</a>
-                </li>
-            </ul>
-        </nav>
+        <!-- 데이터가 없을 때 -->
+        <div th:if="${rooms.totalElements == 0}" class="text-center py-5">
+            <p>등록된 내용이 없습니다.</p>
+        </div>
 
         <div class="text-end mt-4">
             <a href="/admin/room/create" class="btn btn-primary">등록</a>

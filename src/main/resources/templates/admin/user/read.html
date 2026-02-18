@@ -18,13 +18,32 @@
         <h1 class="mb-4">사용자 상세 정보</h1>
         <table class="table table-bordered">
             <tbody>
-                <tr><th>이메일</th><td th:text="${user.email}"></td></tr>
+                <tr><th style="width: 20%;">이메일</th><td th:text="${user.email}"></td></tr>
                 <tr><th>닉네임</th><td th:text="${user.nickName}"></td></tr>
                 <tr><th>휴대폰번호</th><td th:text="${user.phone}"></td></tr>
                 <tr><th>소속</th><td th:text="${user.userGroup}"></td></tr>
-                <tr><th>권한</th><td th:text="${user.role.name()}"></td></tr>
-                <tr><th>상태</th><td th:text="${user.status.name()}"></td></tr>
-                <tr><th>판매자 승인</th><td th:text="${user.sellerApproved}"></td></tr>
+                <tr>
+                    <th>권한</th>
+                    <td th:switch="${user.role.name()}">
+                        <span th:case="'ROLE_ADMIN'">관리자</span>
+                        <span th:case="'ROLE_SELLER'">판매자</span>
+                        <span th:case="'ROLE_USER'">사용자</span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>상태</th>
+                    <td th:switch="${user.status.name()}">
+                        <span th:case="'ACTIVE'">활성</span>
+                        <span th:case="'PENDING'">신청 (승인대기)</span>
+                        <span th:case="'DORMANT'">휴면</span>
+                        <span th:case="'DELETED'">탈퇴</span>
+                        <span th:case="'BANNED'">차단</span>
+                    </td>
+                </tr>
+                <tr>
+                    <th>판매자 승인</th>
+                    <td th:text="${user.sellerApproved}"></td>
+                </tr>
             </tbody>
         </table>
 

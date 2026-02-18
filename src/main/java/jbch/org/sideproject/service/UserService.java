@@ -44,7 +44,7 @@ public class UserService {
                 .phone(requestDto.getPhone())
                 .userGroup(requestDto.getUserGroup())
                 .role(UserRole.ROLE_USER)
-                .status(UserStatus.ACTIVE)
+                .status(UserStatus.PENDING) // 가입 시 승인 대기 상태로 설정
                 .sellerApproved(false)
                 .build();
 

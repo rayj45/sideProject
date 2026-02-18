@@ -25,7 +25,12 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="post, iterStat : ${posts.content}" th:data-url="@{/notice/read/{postId}(postId=${post.id})}" style="cursor:pointer;">
+            <!-- 게시글이 없을 때 -->
+            <tr th:if="${posts.totalElements == 0}">
+                <td colspan="3" class="text-center py-5">등록된 내용이 없습니다.</td>
+            </tr>
+            <!-- 게시글이 있을 때 -->
+            <tr th:unless="${posts.totalElements == 0}" th:each="post, iterStat : ${posts.content}" th:data-url="@{/notice/read/{postId}(postId=${post.id})}" style="cursor:pointer;">
                 <td th:text="${posts.totalElements - (posts.number * posts.size) - iterStat.index}"></td>
                 <td th:text="${post.title}"></td>
                 <td th:text="${post.createdDate}"></td>

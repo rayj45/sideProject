@@ -2,17 +2,102 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
     <header class="navbar navbar-main" id="navbar" th:fragment="header">
+        <style>
+            /* 비로그인 상태일 때 메뉴 위치 조정 */
+            .navbar-main .navbar-nav.nav-anonymous {
+                margin-left: -200px;
+            }
+
+            /* 드롭다운 메뉴 기본 스타일 (숨김 상태) */
+            .navbar-main .dropdown-menu {
+                display: block; /* 애니메이션을 위해 block으로 설정하되, opacity로 제어 */
+                opacity: 0;
+                visibility: hidden;
+                position: absolute; /* 문서 흐름에서 제거하여 상단 메뉴 움직임 방지 */
+                top: 100%; /* 부모 요소 바로 아래에 위치 */
+                left: 0;
+                min-width: 200px; /* 너비 확보 */
+                background-color: rgba(30, 30, 30, 0.95); /* 짙은 회색 배경 */
+                border: none;
+                border-radius: 8px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); /* 그림자 효과 */
+                padding: 10px 0;
+                margin-top: 10px; /* 메뉴와 드롭다운 사이 간격 */
+                transform: translateY(10px); /* 아래에서 위로 올라오는 효과 준비 */
+                transition: all 0.3s ease; /* 부드러운 전환 효과 */
+                z-index: 1000;
+                list-style: none; /* 리스트 기호 제거 */
+                padding-left: 0; /* 리스트 기본 여백 제거 */
+            }
+
+            /* 호버 시 드롭다운 메뉴 표시 */
+            .navbar-main .nav-item.dropdown:hover .dropdown-menu {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0); /* 원래 위치로 이동 */
+            }
+
+            /* 드롭다운 아이템 스타일 */
+            .navbar-main .dropdown-item {
+                color: #e0e0e0;
+                padding: 15px 25px; /* 간격 더 늘림 */
+                font-size: 0.95rem;
+                text-decoration: none;
+                transition: background-color 0.2s, color 0.2s;
+                display: block; /* 블록 요소로 만들어 전체 영역 클릭 가능하게 함 */
+            }
+
+            /* 드롭다운 아이템 호버 효과 */
+            .navbar-main .dropdown-item:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+                color: #ffffff;
+                padding-left: 30px; /* 호버 시 살짝 오른쪽으로 이동하는 효과 */
+            }
+
+            /* 드롭다운 부모 요소 위치 기준 설정 */
+            .navbar-main .nav-item.dropdown {
+                position: relative;
+            }
+
+            /* 드롭다운 화살표 스타일 추가 */
+            .navbar-main .dropdown-toggle::after {
+                display: inline-block;
+                margin-left: 0.255em;
+                vertical-align: 0.255em;
+                content: "";
+                border-top: 0.3em solid;
+                border-right: 0.3em solid transparent;
+                border-bottom: 0;
+                border-left: 0.3em solid transparent;
+                color: rgba(255, 255, 255, 0.55); /* 기본 색상 */
+                transition: color 0.2s;
+            }
+
+            /* 호버 시 화살표 색상 변경 */
+            .navbar-main .nav-item.dropdown:hover .dropdown-toggle::after {
+                color: #ffffff;
+            }
+        </style>
         <a href="/" class="navbar-brand">lifeDeveloperLSH</a>
         <nav>
-            <ul class="navbar-nav" id="navbar-nav">
+            <ul class="navbar-nav" id="navbar-nav" th:classappend="${#authorization.expression('isAnonymous()')} ? 'nav-anonymous'">
                 <li class="nav-item"><a href="/about" class="nav-link">사이트소개</a></li>
                 <li class="nav-item"><a href="/notice/list" class="nav-link">공지사항</a></li>
                 <li class="nav-item"><a href="/archive" class="nav-link">자료실</a></li>
                 <li class="nav-item"><a href="/faq/list" class="nav-link">자주묻는질문</a></li>
                 <li class="nav-item" sec:authorize="isAuthenticated()"><a href="/reservation/list" class="nav-link">부속실 신청</a></li>
-                <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a href="/admin/user/list" class="nav-link">사용자관리</a></li>
-                <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a href="/admin/room/list" class="nav-link">부속실관리</a></li>
-                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'SELLER')"><a href="/admin/product/list" class="nav-link">판매품관리</a></li>
+
+                <!-- 관리자 메뉴 그룹 -->
+                <li class="nav-item dropdown" sec:authorize="hasAnyRole('ADMIN', 'SELLER')">
+                    <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        관리자
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                        <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item" href="/admin/user/list">사용자관리</a></li>
+                        <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item" href="/admin/room/list">부속실관리</a></li>
+                        <li><a class="dropdown-item" href="/admin/product/list">판매품관리</a></li>
+                    </ul>
+                </li>
             </ul>
         </nav>
         <div class="d-flex align-items-center">

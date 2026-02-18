@@ -15,8 +15,9 @@ public class RoomAdminResponseDto {
     private final int capacity;
     private final RoomStatus status;
     private final String description;
+    private final String roomGroup; // 소속 정보 추가
     private final String thumbnailPath;
-    private final List<ImageInfo> images; // 이미지 정보를 담는 내부 클래스 리스트
+    private final List<ImageInfo> images;
 
     @Getter
     public static class ImageInfo {
@@ -35,6 +36,7 @@ public class RoomAdminResponseDto {
         this.capacity = room.getCapacity();
         this.status = room.getStatus();
         this.description = room.getDescription();
+        this.roomGroup = room.getRoomGroup(); // 초기화
         
         this.thumbnailPath = room.getImages().stream()
                 .filter(RoomImage::isThumbnail)

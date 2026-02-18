@@ -18,6 +18,7 @@
         <h1 class="mb-4">자주묻는질문 (FAQ)</h1>
 
         <div class="accordion mt-3" id="faqAccordion">
+            <!-- 게시글이 있을 때 -->
             <div class="accordion-item" th:each="faq, iterStat : ${faqs}">
                 <h2 class="accordion-header" th:id="'heading' + ${iterStat.count}">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" th:data-bs-target="'#collapse' + ${iterStat.count}" aria-expanded="false" th:aria-controls="'collapse' + ${iterStat.count}">
@@ -37,8 +38,9 @@
                 </div>
             </div>
 
-            <div th:if="${faqs.isEmpty()}" class="text-center p-5">
-                <p>등록된 질문이 없습니다.</p>
+            <!-- 게시글이 없을 때 -->
+            <div th:if="${faqs.isEmpty()}" class="text-center py-5">
+                <p>등록된 내용이 없습니다.</p>
             </div>
         </div>
 

@@ -1,5 +1,6 @@
 package jbch.org.sideproject.config;
 
+import jbch.org.sideproject.security.CustomAuthFailureHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,22 +17,22 @@ import org.springframework.security.web.SecurityFilterChain;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final CustomAuthFailureHandler customAuthFailureHandler;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/", "/login", "/user/signup", "/user/check-email", "/user/send-verification", "/user/verify-code", "/user/find-password", "/user/send-password-reset-code", "/user/verify-password-reset-code", "/user/reset-password", "/reservation/**", "/about", "/faq/list", "/css/**", "/js/**", "/images/**").permitAll()
-                        .requestMatchers("/notice/**", "/archive/**").authenticated()
+                        .requestMatchers("/archive/**").authenticated()
                         .requestMatchers("/faq/write", "/faq/modify/**", "/faq/delete/**", "/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll()
-//                        .requestMatchers("/admin/**").hasRole("ADMIN")
-//                        .requestMatchers("/", "/login", "/user/**", "/about", "/faq/list", "/css/**", "/js/**", "/images/**").permitAll()
-//                        .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .usernameParameter("email") // 로그인 파라미터명을 email로 명시
+                        .usernameParameter("email")
                         .defaultSuccessUrl("/", true)
+                        .failureHandler(customAuthFailureHandler) // 실패 핸들러 등록
                         .permitAll()
                 )
                 .logout(logout -> logout

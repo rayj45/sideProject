@@ -23,9 +23,12 @@ public class RoomAdminController {
     private final RoomAdminService roomAdminService;
 
     @GetMapping("/list")
-    public String list(Model model, @PageableDefault(size = 10, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable) {
-        Page<RoomAdminResponseDto> rooms = roomAdminService.list(pageable);
+    public String list(Model model, 
+                       @PageableDefault(size = 10, sort = "createdDate", direction = Sort.Direction.DESC) Pageable pageable,
+                       @RequestParam(required = false) String searchGroup) {
+        Page<RoomAdminResponseDto> rooms = roomAdminService.list(pageable, searchGroup);
         model.addAttribute("rooms", rooms);
+        model.addAttribute("searchGroup", searchGroup); // 검색어 유지
         return "admin/room/list";
     }
 

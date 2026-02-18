@@ -2,17 +2,77 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
     <header class="navbar navbar-sub" th:fragment="header-sub">
+        <style>
+            /* 드롭다운 메뉴 기본 스타일 (숨김 상태) */
+            .navbar-sub .dropdown-menu {
+                display: block;
+                opacity: 0;
+                visibility: hidden;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                min-width: 200px;
+                background-color: #ffffff; /* 흰색 배경 */
+                border: 1px solid #eee;
+                border-radius: 8px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 */
+                padding: 10px 0;
+                margin-top: 10px;
+                transform: translateY(10px);
+                transition: all 0.3s ease;
+                z-index: 1000;
+            }
+
+            /* 호버 시 드롭다운 메뉴 표시 */
+            .navbar-sub .nav-item.dropdown:hover .dropdown-menu {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+            }
+
+            /* 드롭다운 아이템 스타일 */
+            .navbar-sub .dropdown-item {
+                color: #333;
+                padding: 12px 25px;
+                font-size: 0.95rem;
+                text-decoration: none;
+                transition: background-color 0.2s, color 0.2s, padding-left 0.2s;
+            }
+
+            /* 드롭다운 아이템 호버 효과 */
+            .navbar-sub .dropdown-item:hover {
+                background-color: #f8f9fa;
+                color: #0d6efd; /* 포인트 컬러 */
+                padding-left: 30px;
+            }
+
+            .navbar-sub .nav-item.dropdown {
+                position: relative;
+            }
+            .nav-anonymous {
+                margin-left: -200px;
+            }
+        </style>
         <a href="/" class="navbar-brand">lifeDeveloperLSH</a>
         <nav>
-            <ul class="navbar-nav-sub">
+            <ul class="navbar-nav-sub" id="navbar-nav" th:classappend="${#authorization.expression('isAnonymous()')} ? 'nav-anonymous'">
                 <li class="nav-item"><a href="/about" class="nav-link">사이트소개</a></li>
                 <li class="nav-item"><a href="/notice/list" class="nav-link">공지사항</a></li>
                 <li class="nav-item"><a href="/archive" class="nav-link">자료실</a></li>
                 <li class="nav-item"><a href="/faq/list" class="nav-link">자주묻는질문</a></li>
                 <li class="nav-item" sec:authorize="isAuthenticated()"><a href="/reservation/list" class="nav-link">부속실 신청</a></li>
-                <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a href="/admin/user/list" class="nav-link">사용자관리</a></li>
-                <li class="nav-item" sec:authorize="hasRole('ADMIN')"><a href="/admin/room/list" class="nav-link">부속실관리</a></li>
-                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'SELLER')"><a href="/admin/product/list" class="nav-link">판매품관리</a></li>
+
+                <!-- 관리자 메뉴 그룹 -->
+                <li class="nav-item dropdown" sec:authorize="hasAnyRole('ADMIN', 'SELLER')">
+                    <a class="nav-link dropdown-toggle" href="#" id="adminSubDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        관리자
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="adminSubDropdown">
+                        <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item" href="/admin/user/list">사용자관리</a></li>
+                        <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item" href="/admin/room/list">부속실관리</a></li>
+                        <li><a class="dropdown-item" href="/admin/product/list">판매품관리</a></li>
+                    </ul>
+                </li>
             </ul>
         </nav>
         <div class="d-flex align-items-center">

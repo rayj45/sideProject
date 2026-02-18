@@ -16,8 +16,9 @@
             <div class="card-header" th:text="${room.name}"></div>
             <div class="card-body">
                 <p><strong>수용인원:</strong> <span th:text="${room.capacity}"></span>명</p>
-                <p><strong>상태:</strong> <span th:text="${room.status.name()}"></span></p>
-                <p><strong>설명:</strong> <span th:text="${room.description}"></span></p>
+                <p><strong>상태:</strong> <span th:text="${room.status.name() == 'AVAILABLE' ? '사용 가능' : '사용 불가'}"></span></p>
+                <p><strong>설명:</strong></p>
+                <p th:text="${room.description}"></p>
                 <hr>
                 <p><strong>이미지:</strong></p>
                 <div class="row">
@@ -30,7 +31,7 @@
         <div class="mt-3 text-end">
             <a href="/admin/room/list" class="btn btn-secondary">목록</a>
             <a th:href="@{/admin/room/modify/{roomId}(roomId=${room.id})}" class="btn btn-primary">수정</a>
-            <form th:action="@{/admin/user/delete/{userId}(userId=${room.id})}" method="post" style="display:inline;" onsubmit="return confirm('정말로 삭제하시겠습니까?');">
+            <form th:action="@{/admin/room/delete/{roomId}(roomId=${room.id})}" method="post" style="display:inline;" onsubmit="return confirm('정말로 삭제하시겠습니까?');">
                 <button type="submit" class="btn btn-danger">삭제</button>
             </form>
         </div>

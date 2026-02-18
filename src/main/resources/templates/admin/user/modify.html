@@ -40,7 +40,7 @@
                         <select id="role" name="role" class="form-select">
                             <option th:each="roleValue : ${T(jbch.org.sideproject.domain.UserRole).values()}"
                                     th:value="${roleValue}"
-                                    th:text="${roleValue.name()}"
+                                    th:text="${roleValue.name() == 'ROLE_ADMIN' ? '관리자' : (roleValue.name() == 'ROLE_SELLER' ? '판매자' : '사용자')}"
                                     th:selected="${user.role != null and roleValue.name() == user.role.name()}"></option>
                         </select>
                     </div>
@@ -49,7 +49,7 @@
                         <select id="status" name="status" class="form-select">
                             <option th:each="statusValue : ${T(jbch.org.sideproject.domain.UserStatus).values()}"
                                     th:value="${statusValue}"
-                                    th:text="${statusValue.name()}"
+                                    th:text="${statusValue.name() == 'ACTIVE' ? '활성' : (statusValue.name() == 'PENDING' ? '신청 (승인대기)' : (statusValue.name() == 'DORMANT' ? '휴면' : (statusValue.name() == 'DELETED' ? '탈퇴' : '차단')))}"
                                     th:selected="${user.status != null and statusValue.name() == user.status.name()}"></option>
                         </select>
                     </div>

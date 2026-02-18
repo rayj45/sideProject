@@ -3,16 +3,20 @@ package jbch.org.sideproject.service.admin;
 import jbch.org.sideproject.domain.Room;
 import jbch.org.sideproject.domain.RoomImage;
 import jbch.org.sideproject.domain.RoomStatus;
+import jbch.org.sideproject.domain.User;
 import jbch.org.sideproject.repository.RoomImageRepository;
 import jbch.org.sideproject.repository.RoomRepository;
+import jbch.org.sideproject.repository.UserRepository;
 import jbch.org.sideproject.request.admin.RoomCreateRequestDto;
 import jbch.org.sideproject.request.admin.RoomAdminEditRequestDto;
 import jbch.org.sideproject.response.admin.RoomAdminResponseDto;
+import jbch.org.sideproject.security.UserPrincipal;
 import jbch.org.sideproject.service.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,15 +30,21 @@ public class RoomAdminService {
 
     private final RoomRepository roomRepository;
     private final RoomImageRepository roomImageRepository;
+    private final UserRepository userRepository;
     private final FileService fileService;
 
     @Transactional
     public void createRoom(RoomCreateRequestDto requestDto) throws IOException {
+        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User admin = userRepository.findById(userPrincipal.getId())
+                .orElseThrow(() -> new IllegalArgumentException("관리자 정보를 찾을 수 없습니다."));
+
         Room room = Room.builder()
                 .name(requestDto.getName())
                 .capacity(requestDto.getCapacity())
                 .description(requestDto.getDescription())
                 .status(RoomStatus.AVAILABLE)
+                .roomGroup(admin.getUserGroup()) // 관리자의 그룹 정보 저장
                 .build();
 
         boolean isFirstImage = true;
@@ -55,10 +65,15 @@ public class RoomAdminService {
         roomRepository.save(room);
     }
 
-    public Page<RoomAdminResponseDto> list(Pageable pageable) {
+    @Transactional(readOnly = true)
+    public Page<RoomAdminResponseDto> list(Pageable pageable, String searchGroup) {
+        if (searchGroup != null && !searchGroup.isEmpty()) {
+            return roomRepository.findByRoomGroupContaining(searchGroup, pageable).map(RoomAdminResponseDto::new);
+        }
         return roomRepository.findAll(pageable).map(RoomAdminResponseDto::new);
     }
 
+    @Transactional(readOnly = true)
     public RoomAdminResponseDto read(Long roomId) {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("부속실을 찾을 수 없습니다."));
@@ -74,7 +89,8 @@ public class RoomAdminService {
                 requestDto.getName(),
                 requestDto.getCapacity(),
                 requestDto.getDescription(),
-                requestDto.getStatus()
+                requestDto.getStatus(),
+                room.getRoomGroup() // 그룹은 변경하지 않음 (기존 값 유지)
         );
 
         // 이미지 삭제

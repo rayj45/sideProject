@@ -26,18 +26,22 @@ public class Room extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private RoomStatus status;
 
-    @Lob
+    @Column(columnDefinition = "TEXT")
     private String description;
+
+    @Column(name = "room_group")
+    private String roomGroup;
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RoomImage> images = new ArrayList<>();
 
     @Builder
-    public Room(String name, int capacity, RoomStatus status, String description) {
+    public Room(String name, int capacity, RoomStatus status, String description, String roomGroup) {
         this.name = name;
         this.capacity = capacity;
         this.status = status;
         this.description = description;
+        this.roomGroup = roomGroup;
     }
 
     public void addImage(RoomImage image) {
@@ -45,10 +49,11 @@ public class Room extends BaseTimeEntity {
         image.setRoom(this);
     }
 
-    public void adminModifyInfo(String name, int capacity, String description, RoomStatus status) {
+    public void adminModifyInfo(String name, int capacity, String description, RoomStatus status, String roomGroup) {
         this.name = name;
         this.capacity = capacity;
         this.description = description;
         this.status = status;
+        this.roomGroup = roomGroup;
     }
 }

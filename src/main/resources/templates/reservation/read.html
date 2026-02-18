@@ -16,7 +16,7 @@
             <div class="card-header" th:text="${room.name}"></div>
             <div class="card-body">
                 <p><strong>수용인원:</strong> <span th:text="${room.capacity}"></span>명</p>
-                <p><strong>상태:</strong> <span th:text="${room.status.name()}"></span></p>
+                <p><strong>상태:</strong> <span th:text="${room.status.name() == 'AVAILABLE' ? '사용 가능' : '사용 불가'}"></span></p>
                 <p><strong>설명:</strong></p>
                 <p th:text="${room.description}"></p>
                 <hr>
@@ -30,7 +30,7 @@
         </div>
         <div class="mt-3 text-end">
             <a href="/reservation/list" class="btn btn-secondary">목록</a>
-            <a th:href="@{/reservation/apply/{roomId}(roomId=${room.id})}" class="btn btn-primary">예약신청</a>
+            <a th:href="@{/reservation/apply/{roomId}(roomId=${room.id})}" class="btn btn-primary">예약 신청</a>
         </div>
     </div>
 </main>

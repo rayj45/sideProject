@@ -34,45 +34,52 @@
 <div th:replace="~{fragments/header-sub :: header-sub}"></div>
 <main class="main-content">
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>판매품 관리</h1>
-            <a href="/admin/product/create" class="btn btn-primary">판매품 등록</a>
-        </div>
+        <h1 class="mb-4">판매품 관리</h1>
 
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            <div class="col" th:each="product : ${products.content}">
-                <div class="card h-100" th:data-url="@{/admin/product/read/{productId}(productId=${product.id})}">
-                    <img th:src="${product.thumbnailPath != null ? product.thumbnailPath : '/images/no-image.png'}" class="card-img-top" alt="Product Thumbnail">
-                    <div class="card-body">
-                        <h5 class="card-title" th:text="${product.name}"></h5>
-                        <p class="card-text mb-1">
-                            <strong th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'"></strong>
-                        </p>
-                        <p class="description-preview mb-2" th:text="${product.description}"></p>
-                        <p class="card-text text-muted small">
-                            재고: <span th:text="${product.stockQuantity}"></span> |
-                            상태: <span th:text="${product.status.name()}"></span> |
-                            판매자: <span th:text="${product.sellerName}"></span>
-                        </p>
+        <!-- 데이터가 있을 때 -->
+        <div th:if="${products.totalElements > 0}">
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+                <div class="col" th:each="product : ${products.content}">
+                    <div class="card h-100" th:data-url="@{/admin/product/read/{productId}(productId=${product.id})}">
+                        <img th:src="${product.thumbnailPath != null ? product.thumbnailPath : '/images/no-image.png'}" class="card-img-top" alt="Product Thumbnail">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${product.name}"></h5>
+                            <p class="card-text mb-1">
+                                <strong th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'"></strong>
+                            </p>
+                            <p class="description-preview mb-2" th:text="${product.description}"></p>
+                            <p class="card-text text-muted small">
+                                재고: <span th:text="${product.stockQuantity}"></span> |
+                                상태: <span th:text="${product.status.name()}"></span> |
+                                판매자: <span th:text="${product.sellerName}"></span>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
+            <nav aria-label="Page navigation" class="mt-5">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${products.first} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/product/list(page=${products.number - 1})}">이전</a>
+                    </li>
+                    <li class="page-item" th:each="page : ${#numbers.sequence(T(java.lang.Math).max(0, products.number - 2), T(java.lang.Math).min(products.totalPages - 1, products.number + 2))}" th:classappend="${page == products.number} ? 'active'">
+                        <a class="page-link" th:href="@{/admin/product/list(page=${page})}" th:text="${page + 1}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${products.last} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/product/list(page=${products.number + 1})}">다음</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
 
-        <!-- 페이징 -->
-        <nav aria-label="Page navigation" th:if="${products.totalPages > 0}" class="mt-5">
-            <ul class="pagination justify-content-center">
-                <li class="page-item" th:classappend="${products.first} ? 'disabled'">
-                    <a class="page-link" th:href="@{/admin/product/list(page=${products.number - 1})}">이전</a>
-                </li>
-                <li class="page-item" th:each="page : ${#numbers.sequence(T(java.lang.Math).max(0, products.number - 2), T(java.lang.Math).min(products.totalPages - 1, products.number + 2))}" th:classappend="${page == products.number} ? 'active'">
-                    <a class="page-link" th:href="@{/admin/product/list(page=${page})}" th:text="${page + 1}"></a>
-                </li>
-                <li class="page-item" th:classappend="${products.last} ? 'disabled'">
-                    <a class="page-link" th:href="@{/admin/product/list(page=${products.number + 1})}">다음</a>
-                </li>
-            </ul>
-        </nav>
+        <!-- 데이터가 없을 때 -->
+        <div th:if="${products.totalElements == 0}" class="text-center py-5">
+            <p>등록된 내용이 없습니다.</p>
+        </div>
+
+        <div class="text-end mt-4">
+            <a href="/admin/product/create" class="btn btn-primary">등록</a>
+        </div>
     </div>
 </main>
 <div th:replace="~{fragments/footer :: footer}"></div>

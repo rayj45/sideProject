@@ -27,7 +27,12 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="user, iterStat : ${users.content}" th:data-url="@{/admin/user/read/{userId}(userId=${user.id})}" style="cursor:pointer;">
+            <!-- 데이터가 없을 때 -->
+            <tr th:if="${users.totalElements == 0}">
+                <td colspan="5" class="text-center py-5">등록된 내용이 없습니다.</td>
+            </tr>
+            <!-- 데이터가 있을 때 -->
+            <tr th:unless="${users.totalElements == 0}" th:each="user, iterStat : ${users.content}" th:data-url="@{/admin/user/read/{userId}(userId=${user.id})}" style="cursor:pointer;">
                 <td th:text="${users.totalElements - (users.number * users.size) - iterStat.index}"></td>
                 <td th:text="${user.email}"></td>
                 <td th:text="${user.nickName}"></td>

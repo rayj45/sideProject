@@ -26,7 +26,12 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="archive, iterStat : ${archives.content}" th:data-url="@{/archive/read/{archiveId}(archiveId=${archive.id})}" style="cursor:pointer;">
+            <!-- 게시글이 없을 때 -->
+            <tr th:if="${archives.totalElements == 0}">
+                <td colspan="4" class="text-center py-5">등록된 내용이 없습니다.</td>
+            </tr>
+            <!-- 게시글이 있을 때 -->
+            <tr th:unless="${archives.totalElements == 0}" th:each="archive, iterStat : ${archives.content}" th:data-url="@{/archive/read/{archiveId}(archiveId=${archive.id})}" style="cursor:pointer;">
                 <td th:text="${archives.totalElements - (archives.number * archives.size) - iterStat.index}"></td>
                 <td th:text="${archive.title}"></td>
                 <td th:text="${archive.originalFileName}"></td>
